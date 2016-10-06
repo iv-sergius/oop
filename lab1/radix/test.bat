@@ -30,6 +30,17 @@ if ERRORLEVEL 1 goto errRun
 fc.exe test\test-100_16_10.txt %TEMP%\test.txt
 if ERRORLEVEL 1 goto err
 
+%PROGRAM% 2147483647 10 2 > %TEMP%\test.txt
+if ERRORLEVEL 1 goto errRun
+fc.exe test\test2147483647_10_2.txt %TEMP%\test.txt
+if ERRORLEVEL 1 goto err
+
+%PROGRAM% -2147483648 10 2 > %TEMP%\test.txt
+if ERRORLEVEL 1 goto errRun
+fc.exe test\test-2147483648_10_2.txt %TEMP%\test.txt
+if ERRORLEVEL 1 goto err
+
+
 echo Program testing succcesed
 exit 0
 

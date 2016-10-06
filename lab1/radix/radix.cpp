@@ -1,6 +1,6 @@
 ﻿#include <iostream>
 #include <string>
-#include <limits>
+#include <climits>
 #include <stdio.h>
 
 #define CONVERT_NO_ERROR 0
@@ -54,11 +54,19 @@ long StringToLong(const string str, int radix, int & wasError)
 	int firstDigitPosition = (int)(str[0] == '-');
 	int sign = 1 - 2 * firstDigitPosition;
 	int i = firstDigitPosition;
-	while ( (i < str.length()))
+	while ((i < str.length()))
 	{
 		int digit = LetterToDigit(str[i++], radix, wasError);
 		// check on limits
-		resultLong = radix * resultLong + digit;
+		if (resultLong <= (LONG_MAX - digit) / radix)
+		{
+			resultLong = radix * resultLong + digit;
+		}
+		else
+		{
+			wasError = CONVERT_ERROR_LONG_OVERFLOW;
+			return 0;
+		}
 	}
 	resultLong = sign * resultLong;
 	return resultLong;
