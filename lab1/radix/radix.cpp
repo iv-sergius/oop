@@ -3,18 +3,21 @@
 #include <climits>
 #include <stdio.h>
 
-#define CONVERT_NO_ERROR 0
-#define CONVERT_ERROR_EMPTY_STRING 1
-#define CONVERT_ERROR_LONG_OVERFLOW 2
-#define CONVERT_ERROR_LETTER_OUT_RANGE 3
-#define CONVERT_ERROR_DIGIT_OUT_RANGE 4
-#define ERROR_INCORRECT_BASE 5
+enum error {
+ CONVERT_NO_ERROR,
+ CONVERT_ERROR_EMPTY_STRING,
+ CONVERT_ERROR_LONG_OVERFLOW,
+ CONVERT_ERROR_LETTER_OUT_RANGE,
+ CONVERT_ERROR_DIGIT_OUT_RANGE,
+ CONVERT_ERROR_INCORRECT_BASE,
+};
+
 using namespace std;
 
 
-char DigitToLetter(long digit, int radix, int & wasError)
+char DigitToLetter(long digit, int radix, int & errorCode)
 {
-	wasError = CONVERT_NO_ERROR;
+	errorCode = CONVERT_NO_ERROR;
 	if (digit >= 0 && digit <= 9)
 	{
 		return (char)('0' + digit);
@@ -23,13 +26,13 @@ char DigitToLetter(long digit, int radix, int & wasError)
 	{
 		return (char)('A' - 10  + digit);
 	}
-	wasError = CONVERT_ERROR_DIGIT_OUT_RANGE;
+	errorCode = CONVERT_ERROR_DIGIT_OUT_RANGE;
 	return '\0';
 }
 
-long LetterToDigit(char letter, int radix, int & wasError)
+long LetterToDigit(char letter, int radix, int & errorCode)
 {
-	wasError = CONVERT_NO_ERROR;
+	errorCode = CONVERT_NO_ERROR;
 	if (letter >= '0' && letter <= '9')
 	{
 		return (long)(letter - '0');
@@ -38,17 +41,17 @@ long LetterToDigit(char letter, int radix, int & wasError)
 	{
 		return (long)(letter - 'A' + 10);
 	}
-	wasError = CONVERT_ERROR_LETTER_OUT_RANGE;
+	errorCode = CONVERT_ERROR_LETTER_OUT_RANGE;
 	return 0;
 }
 
-long StringToLong(const string str, int radix, int & wasError)
+long StringToLong(const string str, int radix, int & errorCode)
 {
-	wasError = CONVERT_NO_ERROR;
+	errorCode = CONVERT_NO_ERROR;
 	unsigned long resultLong = 0;
-	if (!str.length())
+	if (str.empty())
 	{
-		wasError = CONVERT_ERROR_EMPTY_STRING;
+		errorCode = CONVERT_ERROR_EMPTY_STRING;
 		return 0;
 	}
 	unsigned int firstDigitPosition = (int)(str[0] == '-');
@@ -56,7 +59,7 @@ long StringToLong(const string str, int radix, int & wasError)
 	unsigned int i = firstDigitPosition;
 	while ((i < str.length()))
 	{
-		unsigned int digit = LetterToDigit(str[i++], radix, wasError);
+		unsigned int digit = LetterToDigit(str[i++], radix, errorCode);
 		// check on limits
 		if (resultLong <= (LONG_MAX - digit + firstDigitPosition) / radix)
 		{
@@ -64,16 +67,16 @@ long StringToLong(const string str, int radix, int & wasError)
 		}
 		else
 		{
-			wasError = CONVERT_ERROR_LONG_OVERFLOW;
+			errorCode = CONVERT_ERROR_LONG_OVERFLOW;
 			return 0;
 		}
 	}
 	return (long) sign * resultLong;
 }
 
-string LongToString(const long number, int radix, int & wasError)
+string LongToString(const long number, int radix, int & errorCode)
 {
-	wasError = CONVERT_NO_ERROR;
+	errorCode = CONVERT_NO_ERROR;
 	string resultStr = "";
 	bool isNegative = number < 0; // save sing of numbers
 	unsigned long numberLocal = abs(number);
@@ -88,7 +91,7 @@ string LongToString(const long number, int radix, int & wasError)
 		char nextCh = DigitToLetter(rest, radix, innerError);
 		if (innerError != CONVERT_NO_ERROR)
 		{
-			wasError = innerError;
+			errorCode = innerError;
 			return "";
 		}
 		resultStr = nextCh + resultStr;
@@ -112,41 +115,41 @@ int main(int argv, char *argc[])
 			<< "Usage radix.exe <source notation> <destination notation> <value>\n";
 		return 1;
 	}
-	int wasError = CONVERT_NO_ERROR;
+	int errorCode = CONVERT_NO_ERROR;
 	
-	baseFrom = StringToLong(argc[2], 10, wasError);
-	if (wasError != CONVERT_NO_ERROR)
+	baseFrom = StringToLong(argc[2], 10, errorCode);
+	if (errorCode != CONVERT_NO_ERROR)
 	{
 		cout << endl;
-		return wasError;
+		return errorCode;
 	}
 	if (baseFrom < 2 || baseFrom > 36)
 	{
 		cout << endl;
-		return ERROR_INCORRECT_BASE;
+		return CONVERT_ERROR_INCORRECT_BASE;
 	}
-	baseTo = StringToLong(argc[3], 10, wasError);
-	if (wasError != CONVERT_NO_ERROR)
+	baseTo = StringToLong(argc[3], 10, errorCode);
+	if (errorCode != CONVERT_NO_ERROR)
 	{
 		cout << endl;
-		return wasError;
+		return errorCode;
 	}
 	if (baseTo < 2 || baseTo > 36)
 	{
 		cout << endl;
-		return ERROR_INCORRECT_BASE;
+		return CONVERT_ERROR_INCORRECT_BASE;
 	}
-	long internLong = StringToLong(argc[1], baseFrom, wasError);
-	if (wasError != CONVERT_NO_ERROR)
+	long internLong = StringToLong(argc[1], baseFrom, errorCode);
+	if (errorCode != CONVERT_NO_ERROR)
 	{
 		cout << endl;
-		return wasError;
+		return errorCode;
 	}
-	string resultStr = LongToString(internLong, baseTo, wasError);
-	if (wasError != CONVERT_NO_ERROR)
+	string resultStr = LongToString(internLong, baseTo, errorCode);
+	if (errorCode != CONVERT_NO_ERROR)
 	{
 		cout << endl;
-		return wasError;
+		return errorCode;
 	}
 	cout << resultStr << endl;
 	return 0;
