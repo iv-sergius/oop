@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "replace", "replace\replace.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "radix", "radix\radix.vcxproj", "{91E5912D-919C-4A20-9386-2D616AF5B4FB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "invert", "invert\invert.vcxproj", "{A55FB85E-EBBA-464A-9C6A-EDDD0F4F8914}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{91E5912D-919C-4A20-9386-2D616AF5B4FB}.Release|x64.Build.0 = Release|x64
 		{91E5912D-919C-4A20-9386-2D616AF5B4FB}.Release|x86.ActiveCfg = Release|Win32
 		{91E5912D-919C-4A20-9386-2D616AF5B4FB}.Release|x86.Build.0 = Release|Win32
+		{A55FB85E-EBBA-464A-9C6A-EDDD0F4F8914}.Debug|x64.ActiveCfg = Debug|x64
+		{A55FB85E-EBBA-464A-9C6A-EDDD0F4F8914}.Debug|x64.Build.0 = Debug|x64
+		{A55FB85E-EBBA-464A-9C6A-EDDD0F4F8914}.Debug|x86.ActiveCfg = Debug|Win32
+		{A55FB85E-EBBA-464A-9C6A-EDDD0F4F8914}.Debug|x86.Build.0 = Debug|Win32
+		{A55FB85E-EBBA-464A-9C6A-EDDD0F4F8914}.Release|x64.ActiveCfg = Release|x64
+		{A55FB85E-EBBA-464A-9C6A-EDDD0F4F8914}.Release|x64.Build.0 = Release|x64
+		{A55FB85E-EBBA-464A-9C6A-EDDD0F4F8914}.Release|x86.ActiveCfg = Release|Win32
+		{A55FB85E-EBBA-464A-9C6A-EDDD0F4F8914}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
