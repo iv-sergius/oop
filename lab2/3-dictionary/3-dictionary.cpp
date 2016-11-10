@@ -2,10 +2,14 @@
 //
 
 #include "stdafx.h"
+#include "3-dictionary.h"
 
-
-int main()
+void ConsoleInteraction()
 {
-    return 0;
-}
+	// просим ввести текст
 
+	// считываем разультат
+
+	// принимаем решение
+
+}
