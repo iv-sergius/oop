@@ -61,13 +61,6 @@ int WriteToStream(std::ostream &outStream, SquareMatrix &matrix)
 	return 0;
 }
 
-
-int rowSubDown(double *rowToChange, const double *rowToConst, size_t columnWithNull)
-{
-	//for ()
-	return 0;
-}
-
 double getGaussCoefficient(SquareMatrix &matrix, size_t rowChange, size_t rowConst, size_t col)
 {
 	return matrix[rowChange][col] / matrix[rowConst][col];
@@ -90,25 +83,51 @@ void setIdentity(SquareMatrix &matrix)
 		}
 }
 
-int invertMatrix(SquareMatrix originalMatrix, SquareMatrix &invertedMatrix)
+bool tryMakeDiagonalElementNotZero(SquareMatrix &originalMatrix, SquareMatrix &invertedMatrix, size_t const col)
+{
+	size_t rowWtihMaxElement = col;
+	for (size_t row = col + 1; row < MatrixDim; ++row)
+	{
+		if (abs(originalMatrix[rowWtihMaxElement][col]) < abs(originalMatrix[row][col]))
+		{
+			rowWtihMaxElement = row;
+		}
+	}
+	if (rowWtihMaxElement == col)
+	{
+		return false;
+	}
+	else
+	{
+		std::swap(originalMatrix[col], originalMatrix[rowWtihMaxElement]);
+		std::swap(invertedMatrix[col], invertedMatrix[rowWtihMaxElement]);
+		return true;
+	}
+}
+
+bool invertMatrix(SquareMatrix &originalMatrix, SquareMatrix &invertedMatrix)
 {
 	double transformCoefficient;
 	setIdentity(invertedMatrix);
-	// TODO normalize if left top element is 0
-	for (size_t col = 0; col < MatrixDim; ++col )
+	for (size_t col = 0; col < MatrixDim; ++col)
+	{
+		// normalize if left top element is 0
+		if (abs(originalMatrix[col][col]) < 2 * DBL_EPSILON)
+		{
+			if (tryMakeDiagonalElementNotZero(originalMatrix, invertedMatrix, col) == false)
+			{
+				std::cerr << "Matrix is singular" << std::endl;
+				return false;
+			}
+		}
 		for (size_t row = col + 1; row < MatrixDim; ++row)
 		{
 			// go down
-			if (originalMatrix[col][col] < DBL_EPSILON)
-			{
-				std::cerr << "Matrix is singular" << std::endl;
-				return 1;
-			}
 			transformCoefficient = getGaussCoefficient(originalMatrix, row, col, col);
 			gaussMatrixTransformation(originalMatrix, row, col, transformCoefficient);
 			gaussMatrixTransformation(invertedMatrix, row, col, transformCoefficient);
 		}
-	double determinant = 1.0;
+	}
 
 	for (size_t col = MatrixDim - 1 ; col > 0; --col)
 		for (size_t row = 0; row < col; ++row)
@@ -123,18 +142,21 @@ int invertMatrix(SquareMatrix originalMatrix, SquareMatrix &invertedMatrix)
 		{
 			invertedMatrix[row][col] = invertedMatrix[row][col] / originalMatrix[row][row];
 		}
-	return 0;
+	return true;
 }
 
 
 
-int invertMatrix(std::istream &inStream, std::ostream &outStream)
+bool invertMatrix(std::istream &inStream, std::ostream &outStream)
 {
 	SquareMatrix originalMatrix, invertedMatrix;
 	ReadFromStream(inStream, originalMatrix);
-	invertMatrix(originalMatrix, invertedMatrix);
+	if (!invertMatrix(originalMatrix, invertedMatrix))
+	{
+		return false;
+	};
 	WriteToStream(outStream, invertedMatrix);
-	return 0;
+	return true;
 }
 
 int main(int argv, char *argc[])
@@ -151,7 +173,10 @@ int main(int argv, char *argc[])
 		std::cout << "Can't open input file " << argc[1] << std::endl;
 		return 2;
 	}
-	invertMatrix(inFile, std::cout);
+	if (!invertMatrix(inFile, std::cout))
+	{
+		return 3;
+	}
 
 	return 0;
 }
