@@ -27,12 +27,11 @@ int main(int argv, char * argc[])
 		return 2;
 	}
 	
-	//time_t startTime = clock();
-	std::set<size_t> primeNumbersSet = GeneratePrimeNumbersSet(upperBound);
-	//time_t finishTime = clock();
-	//std::cout << (finishTime - startTime) / 1000 << std::endl;
-	
-	WriteSet(primeNumbersSet);
+	if (upperBound < MAX_UPPER_BOUND)
+	{
+		std::set<size_t> primeNumbersSet = GeneratePrimeNumbersSet(upperBound);	
+		WriteSet(primeNumbersSet);
+	}
 
 	return 0;
 }

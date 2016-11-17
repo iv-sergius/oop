@@ -1,14 +1,8 @@
 // 4-generate-prime-tests.cpp: определяет точку входа для консольного приложения.
 //
 #include "stdafx.h"
-#define BOOST_TEST_NO_MAIN 
 #include <boost\test\unit_test.hpp>
 #include "..\4-generate-prime.h"
-
-bool SetsAreEqual(std::set<size_t> const &x, std::set<size_t> const &y)
-{
-	return x == y;
-}
 
 BOOST_AUTO_TEST_SUITE(Test_GeneratePrimeNumbersSet_function)
 
@@ -23,12 +17,6 @@ BOOST_AUTO_TEST_SUITE(Test_GeneratePrimeNumbersSet_function)
 		BOOST_AUTO_TEST_CASE(must_return_empty_set_on_upperBound_equal_1)
 		{
 			std::set<size_t>  mustBeEmptySet = GeneratePrimeNumbersSet(1);
-			BOOST_CHECK(mustBeEmptySet.empty());
-		}
-
-		BOOST_AUTO_TEST_CASE(must_return_empty_set_on_upperBound_equal_1000000001)
-		{
-			std::set<size_t>  mustBeEmptySet = GeneratePrimeNumbersSet(MAX_UPPER_BOUND + 1);
 			BOOST_CHECK(mustBeEmptySet.empty());
 		}
 

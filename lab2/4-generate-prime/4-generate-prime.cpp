@@ -35,7 +35,7 @@ std::set<size_t> GeneratePrimeNumbersSet(size_t upperBound)
 		resultSetWithPrimeNumbers.insert(2);
 		if (upperBound > 2)
 		{
-			resultSetWithPrimeNumbers.insert(3);
+			resultSetWithPrimeNumbers.insert(resultSetWithPrimeNumbers.end(), 3);
 			std::vector<bool> primeNumbersSieve(upperBound + 1, true);
 			SiftPrimeNumber(3, primeNumbersSieve, upperBound);
 			size_t candidateInPrime = 5;
@@ -43,15 +43,11 @@ std::set<size_t> GeneratePrimeNumbersSet(size_t upperBound)
 			{
 				if (primeNumbersSieve[candidateInPrime])
 				{
-					resultSetWithPrimeNumbers.insert(candidateInPrime);
+					resultSetWithPrimeNumbers.insert(resultSetWithPrimeNumbers.end(), candidateInPrime);
 					SiftPrimeNumber(candidateInPrime, primeNumbersSieve, upperBound);
 				}
 			}
 		}
-	}
-	else
-	{
-		std::cerr << "Warning : this upper bound value don't supported, return empty set" << std::endl;
 	}
 	return resultSetWithPrimeNumbers;
 }
