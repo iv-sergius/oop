@@ -20,6 +20,12 @@ BOOST_AUTO_TEST_SUITE(Test_GeneratePrimeNumbersSet_function)
 			BOOST_CHECK(mustBeEmptySet.empty());
 		}
 
+		BOOST_AUTO_TEST_CASE(must_return_empty_set_on_upperBound_equal_1000000001)
+		{
+			std::set<size_t>  mustBeEmptySet = GeneratePrimeNumbersSet(MAX_UPPER_BOUND + 1);
+			BOOST_CHECK(mustBeEmptySet.empty());
+		}
+
 		BOOST_AUTO_TEST_SUITE_END()
 		
 		std::set<size_t>  resultSet;
