@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-std::vector<double> readVectorFromStream(std::istream & inStream);
+std::vector<double> ReadVectorFromStream(std::istream & inStream);
 
-void writeVectorToStream(std::vector<double> const & vectorToOut, std::ostream & outStream);
+void WriteVectorToStream(std::vector<double> const & vectorToOut, std::ostream & outStream);
 
-void transformVector(std::vector<double> & vector);
+void TransformVector(std::vector<double> & vector);
