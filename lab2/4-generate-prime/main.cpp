@@ -29,7 +29,7 @@ int main(int argv, char * argc[])
 	
 	if (upperBound < MAX_UPPER_BOUND)
 	{
-		std::set<size_t> primeNumbersSet = GeneratePrimeNumbersSet(upperBound);	
+		std::set<size_t> primeNumbersSet = GenerateSetOfPrimes(upperBound);	
 		WriteSet(primeNumbersSet);
 	}
 

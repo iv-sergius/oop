@@ -26,28 +26,26 @@ void SiftPrimeNumber(size_t primeNumber, std::vector<bool> &primeNumbersSieve, s
 	}
 }
 
-std::set<size_t> GeneratePrimeNumbersSet(size_t upperBound)
+std::set<size_t> GenerateSetOfPrimes(size_t upperBound)
 {
-	std::set<size_t> resultSetWithPrimeNumbers;
+	std::set<size_t> primesSet;
 
 	if (IsUpperBoundInLimits(upperBound))
 	{
-		resultSetWithPrimeNumbers.insert(2);
-		if (upperBound > 2)
+		if (upperBound > 1)
 		{
-			resultSetWithPrimeNumbers.insert(resultSetWithPrimeNumbers.end(), 3);
-			std::vector<bool> primeNumbersSieve(upperBound + 1, true);
-			SiftPrimeNumber(3, primeNumbersSieve, upperBound);
-			size_t candidateInPrime = 5;
-			for (candidateInPrime = 5; candidateInPrime <= upperBound; candidateInPrime += 2)
+			primesSet.insert(2);
+		}
+		std::vector<bool> flagIfPrime(upperBound + 1, true);
+		size_t candidateInPrime = 3;
+		for (candidateInPrime = 3; candidateInPrime <= upperBound; candidateInPrime += 2)
+		{
+			if (flagIfPrime[candidateInPrime])
 			{
-				if (primeNumbersSieve[candidateInPrime])
-				{
-					resultSetWithPrimeNumbers.insert(resultSetWithPrimeNumbers.end(), candidateInPrime);
-					SiftPrimeNumber(candidateInPrime, primeNumbersSieve, upperBound);
-				}
+				primesSet.insert(primesSet.end(), candidateInPrime);
+				SiftPrimeNumber(candidateInPrime, flagIfPrime, upperBound);
 			}
 		}
 	}
-	return resultSetWithPrimeNumbers;
+	return primesSet;
 }
