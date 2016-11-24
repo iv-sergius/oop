@@ -12,12 +12,6 @@ bool IsUpperBoundInLimits(size_t upperBound)
 	return upperBound > 1 && upperBound <= MAX_UPPER_BOUND;
 }
 
-//size_t GetSizeOfPrimeNumbersSet(size_t upperBound)
-//{
-//	size_t calculatedSize = (size_t) 2 * upperBound / log(upperBound);
-//	return (calculatedSize < MAX_PRIME_AMOUNT) ? calculatedSize : MAX_PRIME_AMOUNT;
-//}
-
 void SiftPrimeNumber(size_t primeNumber, std::vector<bool> &primeNumbersSieve, size_t upperBound)
 {
 	for (size_t k = primeNumber * primeNumber; k <= upperBound; k += 2 * primeNumber)
