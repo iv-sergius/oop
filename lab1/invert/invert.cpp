@@ -61,12 +61,12 @@ int WriteToStream(std::ostream &outStream, SquareMatrix &matrix)
 	return 0;
 }
 
-double getGaussCoefficient(SquareMatrix &matrix, size_t rowChange, size_t rowConst, size_t col)
+double GetGaussCoefficient(SquareMatrix &matrix, size_t rowChange, size_t rowConst, size_t col)
 {
 	return matrix[rowChange][col] / matrix[rowConst][col];
 }
 
-void gaussMatrixTransformation(SquareMatrix &matrix, size_t rowChange, size_t rowConst, double coefficient)
+void GaussMatrixTransformation(SquareMatrix &matrix, size_t rowChange, size_t rowConst, double coefficient)
 {
 	for (size_t col = 0; col < MatrixDim; ++col)
 	{
@@ -74,7 +74,7 @@ void gaussMatrixTransformation(SquareMatrix &matrix, size_t rowChange, size_t ro
 	}
 }
 
-void setIdentity(SquareMatrix &matrix)
+void SetIdentity(SquareMatrix &matrix)
 {
 	for (size_t col = 0; col < MatrixDim; ++col)
 		for (size_t row = 0; row < MatrixDim; ++row)
@@ -83,7 +83,7 @@ void setIdentity(SquareMatrix &matrix)
 		}
 }
 
-bool tryMakeDiagonalElementNotZero(SquareMatrix &originalMatrix, SquareMatrix &invertedMatrix, size_t const col)
+bool TryMakeDiagonalElementNotZero(SquareMatrix &originalMatrix, SquareMatrix &invertedMatrix, size_t const col)
 {
 	size_t rowWtihMaxElement = col;
 	for (size_t row = col + 1; row < MatrixDim; ++row)
@@ -105,16 +105,17 @@ bool tryMakeDiagonalElementNotZero(SquareMatrix &originalMatrix, SquareMatrix &i
 	}
 }
 
-bool invertMatrix(SquareMatrix &originalMatrix, SquareMatrix &invertedMatrix)
+bool InvertMatrix(SquareMatrix const originalMatrix, SquareMatrix &invertedMatrix)
 {
+	SquareMatrix copyOfOriginalMatrix = originalMatrix;
 	double transformCoefficient;
-	setIdentity(invertedMatrix);
+	SetIdentity(invertedMatrix);
 	for (size_t col = 0; col < MatrixDim; ++col)
 	{
 		// normalize if left top element is 0
-		if (abs(originalMatrix[col][col]) < 2 * DBL_EPSILON)
+		if (abs(copyOfOriginalMatrix[col][col]) < 2 * DBL_EPSILON)
 		{
-			if (tryMakeDiagonalElementNotZero(originalMatrix, invertedMatrix, col) == false)
+			if (TryMakeDiagonalElementNotZero(copyOfOriginalMatrix, invertedMatrix, col) == false)
 			{
 				std::cerr << "Matrix is singular" << std::endl;
 				return false;
@@ -123,9 +124,9 @@ bool invertMatrix(SquareMatrix &originalMatrix, SquareMatrix &invertedMatrix)
 		for (size_t row = col + 1; row < MatrixDim; ++row)
 		{
 			// go down
-			transformCoefficient = getGaussCoefficient(originalMatrix, row, col, col);
-			gaussMatrixTransformation(originalMatrix, row, col, transformCoefficient);
-			gaussMatrixTransformation(invertedMatrix, row, col, transformCoefficient);
+			transformCoefficient = GetGaussCoefficient(copyOfOriginalMatrix, row, col, col);
+			GaussMatrixTransformation(copyOfOriginalMatrix, row, col, transformCoefficient);
+			GaussMatrixTransformation(invertedMatrix, row, col, transformCoefficient);
 		}
 	}
 
@@ -133,25 +134,25 @@ bool invertMatrix(SquareMatrix &originalMatrix, SquareMatrix &invertedMatrix)
 		for (size_t row = 0; row < col; ++row)
 		{
 			// go up
-			transformCoefficient = getGaussCoefficient(originalMatrix, row, col, col);
-			gaussMatrixTransformation(originalMatrix, row, col, transformCoefficient);
-			gaussMatrixTransformation(invertedMatrix, row, col, transformCoefficient);
+			transformCoefficient = GetGaussCoefficient(copyOfOriginalMatrix, row, col, col);
+			GaussMatrixTransformation(copyOfOriginalMatrix, row, col, transformCoefficient);
+			GaussMatrixTransformation(invertedMatrix, row, col, transformCoefficient);
 		}
 	for (size_t col = 0; col < MatrixDim; ++col)
 		for (size_t row = 0; row < MatrixDim; ++row)
 		{
-			invertedMatrix[row][col] = invertedMatrix[row][col] / originalMatrix[row][row];
+			invertedMatrix[row][col] = invertedMatrix[row][col] / copyOfOriginalMatrix[row][row];
 		}
 	return true;
 }
 
 
 
-bool invertMatrix(std::istream &inStream, std::ostream &outStream)
+bool InvertMatrix(std::istream &inStream, std::ostream &outStream)
 {
 	SquareMatrix originalMatrix, invertedMatrix;
 	ReadFromStream(inStream, originalMatrix);
-	if (!invertMatrix(originalMatrix, invertedMatrix))
+	if (!InvertMatrix(originalMatrix, invertedMatrix))
 	{
 		return false;
 	};
@@ -173,7 +174,7 @@ int main(int argv, char *argc[])
 		std::cout << "Can't open input file " << argc[1] << std::endl;
 		return 2;
 	}
-	if (!invertMatrix(inFile, std::cout))
+	if (!InvertMatrix(inFile, std::cout))
 	{
 		return 3;
 	}
