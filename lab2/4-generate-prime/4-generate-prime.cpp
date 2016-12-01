@@ -30,14 +30,14 @@ std::set<size_t> GenerateSetOfPrimes(size_t upperBound)
 		{
 			primesSet.insert(2);
 		}
-		std::vector<bool> flagIfPrime(upperBound + 1, true);
+		std::vector<bool> isPrimeVector(upperBound + 1, true);
 		size_t candidateInPrime = 3;
 		for (candidateInPrime = 3; candidateInPrime <= upperBound; candidateInPrime += 2)
 		{
-			if (flagIfPrime[candidateInPrime])
+			if (isPrimeVector[candidateInPrime])
 			{
 				primesSet.insert(primesSet.end(), candidateInPrime);
-				SiftPrimeNumber(candidateInPrime, flagIfPrime, upperBound);
+				SiftPrimeNumber(candidateInPrime, isPrimeVector, upperBound);
 			}
 		}
 	}
