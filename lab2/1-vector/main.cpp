@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 #include "1-vector.h"
+#include <algorithm>
 
 int main(int argv, const char * argc[])
 {
@@ -13,6 +14,9 @@ int main(int argv, const char * argc[])
 		return 0;
 	}
 	TransformVector(vectorForTransform);
+	std::vector<double> sortedVector;
+	sortedVector = vectorForTransform;
+	std::sort(sortedVector.begin(), sortedVector.end());
 	WriteVectorToStream(vectorForTransform, std::cout);
 	return 0;
 }

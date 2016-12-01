@@ -53,11 +53,18 @@ BOOST_AUTO_TEST_SUITE(Test_vector_input_output)
 			const std::vector<double> resultVector = {-2};
 			BOOST_CHECK(sourceVector == resultVector);
 		}
-		BOOST_AUTO_TEST_CASE(Vector_with_few_element)
+		BOOST_AUTO_TEST_CASE(Vector_with_2_elements)
 		{
-			std::vector<double> sourceVector = { -3, 2, -1, 1 }; //3.22
+			std::vector<double> sourceVector = {-3, 2};
 			TransformVector(sourceVector);
-			const std::vector<double> resultVector = { -6, -1, -2, -2 };
+			const std::vector<double> resultVector = {-6, 0};
+			BOOST_CHECK(sourceVector == resultVector);
+		}
+		BOOST_AUTO_TEST_CASE(Vector_with_few_elements)
+		{
+			std::vector<double> sourceVector = {0, 2, 1, -1}; // sum of non negative 3
+			TransformVector(sourceVector);
+			const std::vector<double> resultVector = {0, -1, 2, -4};
 			BOOST_CHECK(sourceVector == resultVector);
 		}
 	BOOST_AUTO_TEST_SUITE_END()

@@ -27,7 +27,7 @@ void TransformVector(std::vector<double> & vector)
 	{
 		return;
 	}
-	double sumOfNonNegative = std::accumulate(vector.begin(), vector.end(), 0, [](double sum, double element) {
+	double sumOfNonNegative = std::accumulate(vector.begin(), vector.end(), 0.0, [](double sum, double element) {
 		return sum += (element > 0) ? element : 0;
 	});
 	bool isEven = false;
