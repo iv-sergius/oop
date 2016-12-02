@@ -2,16 +2,6 @@
 #include "Car.h"
 #include <cmath>
 
-//CCar::CCar()
-//{
-//}
-//
-//
-//CCar::~CCar()
-//{
-//}
-
-
 bool CCar::TurnOnEngine()
 {
 	m_isTurnOn = true;
@@ -33,9 +23,10 @@ bool CCar::TurnOffEngine()
 
 bool CCar::SetGear(int gear)
 {
-	if (m_isTurnOn)
+	CarGear carGear = static_cast <CarGear>(gear);
+	if (m_isTurnOn && IsSpeedInGearLimits(carGear, m_speed))
 	{
-		m_gear = static_cast <CarGear>(gear);
+		m_gear = carGear;
 		return true;
 	}
 	else
@@ -48,13 +39,21 @@ bool CCar::SetSpeed(unsigned speed)
 {
 	if (IsSpeedInGearLimits(m_gear, speed))
 	{
-		m_speed = speed;
+		if (m_gear == CarGear::Reverse)
+		{
+			m_speed = - speed;
+		}
+		else if (m_gear == CarGear::Neutral)
+		{
+			m_speed = speed;
+		}
+		else
+		{
+			m_speed = speed;
+		}
 		return true;
 	}
-	else
-	{
-		return false;
-	}
+	return false;
 }
 
 bool CCar::IsEngineTurnedOn() const

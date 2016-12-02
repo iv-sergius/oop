@@ -1,6 +1,6 @@
 #pragma once
 
-
+static const int MAX_GEAR = 5;
 
 class CCar
 {
