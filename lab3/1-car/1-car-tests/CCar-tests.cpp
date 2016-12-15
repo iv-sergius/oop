@@ -8,8 +8,9 @@ void CheckGearLimits(CCar & car, const int gear, const int minSpeed, const int m
 		car.SetGear(i);
 		car.SetSpeed(minSpeed * (i+1) / gear );
 	}
-	car.SetGear(gear);
+	//car.SetGear(gear);
 	BOOST_CHECK_EQUAL(car.SetGear(gear), true);
+	BOOST_CHECK_EQUAL(car.GetGear(), gear);
 	BOOST_CHECK_EQUAL(car.SetSpeed(minSpeed), true);
 	BOOST_CHECK_EQUAL(car.GetSpeed(), minSpeed);
 	BOOST_CHECK_EQUAL(car.SetSpeed(minSpeed - 1), false);
@@ -154,10 +155,22 @@ BOOST_FIXTURE_TEST_SUITE(Test_Car_class, CarFixture)
 		BOOST_AUTO_TEST_SUITE_END()
 
 		BOOST_AUTO_TEST_SUITE(Check_avalible_speed_range_for_each_gear)
-			/*BOOST_AUTO_TEST_CASE(check_for_reverse)
+			BOOST_AUTO_TEST_CASE(check_for_reverse)
 			{
 				CheckGearLimits(car, -1, 0, 20);
-			}*/
+			}
+			BOOST_AUTO_TEST_CASE(check_for_neutral)
+			{
+				car.SetGear(1);
+				car.SetSpeed(10);
+				BOOST_CHECK_EQUAL(car.SetGear(0), true);
+				BOOST_CHECK_EQUAL(car.GetGear(), 0);
+				BOOST_CHECK_EQUAL(car.GetSpeed(), 10);
+				BOOST_CHECK_EQUAL(car.SetGear(11), false);
+				BOOST_CHECK_EQUAL(car.GetSpeed(), 10);
+				BOOST_CHECK_EQUAL(car.SetSpeed(9), true);
+				BOOST_CHECK_EQUAL(car.GetSpeed(), 9);
+			}
 			BOOST_AUTO_TEST_CASE(check_for_1_gear)
 			{
 				CheckGearLimits(car, 1, 0, 30);
@@ -181,6 +194,23 @@ BOOST_FIXTURE_TEST_SUITE(Test_Car_class, CarFixture)
 		BOOST_AUTO_TEST_SUITE_END()
 
 		BOOST_AUTO_TEST_SUITE(Check_speed_range_enable_each_gear)
+			BOOST_AUTO_TEST_CASE(check_for_reverse)
+			{
+				car.SetGear(1);
+				BOOST_CHECK_EQUAL(car.GetGear(), 1);
+				BOOST_CHECK_EQUAL(car.GetSpeed(), 0);
+				BOOST_CHECK_EQUAL(car.SetGear(-1), true);
+				BOOST_CHECK_EQUAL(car.GetGear(), -1);
+
+				BOOST_CHECK_EQUAL(car.SetSpeed(1), true);
+				BOOST_CHECK_EQUAL(car.GetSpeed(), 1);
+				BOOST_CHECK_EQUAL(car.SetGear(-1), false);
+				BOOST_CHECK_EQUAL(car.GetSpeed(), 1);
+				car.SetGear(0);
+				BOOST_CHECK_EQUAL(car.SetSpeed(1), true);
+				BOOST_CHECK_EQUAL(car.GetSpeed(), 1);
+				BOOST_CHECK_EQUAL(car.GetGear(), 0);
+			}
 			BOOST_AUTO_TEST_CASE(check_1_gear)
 			{
 				CheckEnableGearSpeed(car, 1, 0, 30);

@@ -41,7 +41,7 @@ bool CCar::SetSpeed(unsigned speed)
 	{
 		if (m_gear == CarGear::Reverse)
 		{
-			m_speed = - speed;
+			m_speed = - static_cast<int>(speed);
 		}
 		else if (m_gear == CarGear::Neutral)
 		{
@@ -68,17 +68,17 @@ int CCar::GetGear() const
 
 unsigned CCar::GetSpeed() const
 {
-	return m_speed;
+	return abs(m_speed);
 }
 
 bool CCar::IsSpeedInGearLimits(CarGear gear, int speed)
 {
 	return 
+		(gear == CarGear::Reverse && speed >=   0 && speed <=  20) ||
 		(gear == CarGear::Neutral && abs(speed) <= abs(m_speed)) ||
-		(gear == CarGear::First   && speed >=  0  && speed <=  30) ||
-		(gear == CarGear::Second  && speed >= 20  && speed <=  50) ||
-		(gear == CarGear::Third   && speed >= 30  && speed <=  60) ||
-		(gear == CarGear::Fourth  && speed >= 40  && speed <=  90) ||
-		(gear == CarGear::Fifth   && speed >= 50  && speed <= 150) ||
-		(gear == CarGear::Reverse && speed >= -20 && speed <=   0);
+		(gear == CarGear::First   && speed >=   0 && speed <=  30) ||
+		(gear == CarGear::Second  && speed >=  20 && speed <=  50) ||
+		(gear == CarGear::Third   && speed >=  30 && speed <=  60) ||
+		(gear == CarGear::Fourth  && speed >=  40 && speed <=  90) ||
+		(gear == CarGear::Fifth   && speed >=  50 && speed <= 150);
 }
