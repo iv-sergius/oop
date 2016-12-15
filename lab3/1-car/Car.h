@@ -1,6 +1,8 @@
 #pragma once
+#include <map>
 
-static const int MAX_GEAR = 5;
+static const int MAX_GEAR =  5;
+static const int MIN_GEAR = -1;
 
 class CCar
 {
@@ -25,6 +27,20 @@ public:
 	int GetGear()const;
 	unsigned GetSpeed()const;
 private:
+	struct SLimits
+	{
+		int min;
+		int max;
+	};
+	const std::map<CarGear, SLimits> gearLimits = {
+		{CarGear::Reverse, { 0,  20}},
+		{CarGear::Neutral, { 0, 150}},
+		{CarGear::First,   { 0,  30}},
+		{CarGear::Second,  {20,  50}},
+		{CarGear::Third,   {30,  60}},
+		{CarGear::Fourth,  {40,  90}},
+		{CarGear::Fifth,   {50, 150}}
+	};
 	bool IsSpeedInGearLimits(CarGear gear, int speed);
 protected:
 	bool m_isTurnOn = false;

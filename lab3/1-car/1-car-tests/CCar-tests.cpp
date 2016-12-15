@@ -6,7 +6,7 @@ void CheckGearLimits(CCar & car, const int gear, const int minSpeed, const int m
 	for (int i = 0; i < gear; ++i)
 	{
 		car.SetGear(i);
-		car.SetSpeed(minSpeed * (i+1) / gear );
+		car.SetSpeed(minSpeed * (i + 1) / gear );
 	}
 	//car.SetGear(gear);
 	BOOST_CHECK_EQUAL(car.SetGear(gear), true);
@@ -166,7 +166,7 @@ BOOST_FIXTURE_TEST_SUITE(Test_Car_class, CarFixture)
 				BOOST_CHECK_EQUAL(car.SetGear(0), true);
 				BOOST_CHECK_EQUAL(car.GetGear(), 0);
 				BOOST_CHECK_EQUAL(car.GetSpeed(), 10);
-				BOOST_CHECK_EQUAL(car.SetGear(11), false);
+				BOOST_CHECK_EQUAL(car.SetSpeed(11), false);
 				BOOST_CHECK_EQUAL(car.GetSpeed(), 10);
 				BOOST_CHECK_EQUAL(car.SetSpeed(9), true);
 				BOOST_CHECK_EQUAL(car.GetSpeed(), 9);
