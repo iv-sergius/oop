@@ -2,6 +2,27 @@
 #include "Car.h"
 #include <cmath>
 
+namespace
+{
+
+const std::map<CCar::CarGear, CCar::SLimits> GEAR_LIMITS = {
+	{ CCar::CarGear::Reverse, { 0,   20 } },
+	{ CCar::CarGear::Neutral, { 0,  150 } },
+	{ CCar::CarGear::First,   { 0,   30 } },
+	{ CCar::CarGear::Second,  { 20,  50 } },
+	{ CCar::CarGear::Third,   { 30,  60 } },
+	{ CCar::CarGear::Fourth,  { 40,  90 } },
+	{ CCar::CarGear::Fifth,   { 50, 150 } }
+};
+
+}
+
+CCar::CCar() 
+	: m_gearLimits(GEAR_LIMITS)
+{
+
+}
+
 bool CCar::TurnOnEngine()
 {
 	m_isTurnOn = true;
@@ -79,6 +100,7 @@ bool CCar::IsSpeedInGearLimits(CarGear gear, int speed)
 	}
 	else
 	{
-		return speed >= gearLimits.at(gear).min && speed <= gearLimits.at(gear).max;
+		return speed >= m_gearLimits.at(gear).min && speed <= m_gearLimits.at(gear).max;
 	}
 }
+
