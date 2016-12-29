@@ -24,7 +24,6 @@ SSportsman keeper = { "Артем", "Ребров", 193, 91 };
 
 std::vector<SSportsman> emptyVector;
 std::vector<SSportsman> team = {
-	keeper,
 	{ "Боккетти", "Сальвадоре", 186, 86 },
 	{ "Илья", "Кутепов", 192, 85 },
 	{ "Евгений", "Макеев", 181, 73 },
@@ -35,6 +34,7 @@ std::vector<SSportsman> team = {
 	{ "Квинси", "Промес", 174, 71 },
 	{ "Джано", "Ананидзе", 172, 64 },
 	{ "Зе", "Луиш", 184, 84 },
+	keeper,
 };
 
 bool LessHeight(const SSportsman &lhs, const SSportsman & rhs) {
@@ -42,21 +42,16 @@ bool LessHeight(const SSportsman &lhs, const SSportsman & rhs) {
 };
 
 BOOST_AUTO_TEST_SUITE(Template_function_FindMaxEx)
-	
 	BOOST_AUTO_TEST_SUITE(return_false_if_vector_is_empty)
-	
 		BOOST_AUTO_TEST_CASE(and_do_not_modify_max_value){
 			SSportsman initialSportsman, testSportsman;
 			BOOST_CHECK(!FindMaxEx(emptyVector, testSportsman, LessHeight));
 			CheckSportsmansEquality(initialSportsman, testSportsman);
 		}
-	
 	BOOST_AUTO_TEST_SUITE_END()
 
 	BOOST_AUTO_TEST_SUITE(return_true_for_nonempty_vector)
-
 		BOOST_AUTO_TEST_SUITE(and_give_right_value)
-
 			BOOST_AUTO_TEST_CASE(if_use_function){
 				SSportsman initialSportsman, testSportsman;
 				BOOST_CHECK(FindMaxEx(team, testSportsman, LessHeight));
@@ -68,12 +63,21 @@ BOOST_AUTO_TEST_SUITE(Template_function_FindMaxEx)
 					return lhs.weight < rhs.weight ? true : false;
 				}));
 				CheckSportsmansEquality(keeper, testSportsman);
+				CheckSportsmansEquality(team[0], team[0]);
 			}
-
 		BOOST_AUTO_TEST_SUITE_END()
-
 	BOOST_AUTO_TEST_SUITE_END()
 
+	BOOST_AUTO_TEST_SUITE(work_if_functor_is_missing)
+		BOOST_AUTO_TEST_CASE(and_do_not_modify_vector)
+		{
+			std::vector<int> initialVector = { 1, 2, 1 };
+			auto testVector = initialVector;
+			int testValue = 0;
+			BOOST_CHECK(FindMaxEx(testVector, testValue));
+			BOOST_CHECK_EQUAL(testValue, 2);
+		}
+	BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE_END()
 
 
