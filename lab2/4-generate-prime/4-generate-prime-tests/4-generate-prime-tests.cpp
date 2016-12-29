@@ -19,11 +19,13 @@ BOOST_AUTO_TEST_SUITE(Test_GenerateSetOfPrimes_function)
 			std::set<size_t>  mustBeEmptySet = GenerateSetOfPrimes(1);
 			BOOST_CHECK(mustBeEmptySet.empty());
 		}
+#ifndef _DEBUG
 		BOOST_AUTO_TEST_CASE(must_return_non_empty_set_on_upperBound_equal_1000000000)
 		{
 			std::set<size_t>  mustBeEmptySet = GenerateSetOfPrimes(MAX_UPPER_BOUND);
 			BOOST_CHECK(!mustBeEmptySet.empty());
 		}
+#endif
 		BOOST_AUTO_TEST_CASE(must_return_empty_set_on_upperBound_equal_1000000001)
 		{
 			std::set<size_t>  mustBeEmptySet = GenerateSetOfPrimes(MAX_UPPER_BOUND + 1);
