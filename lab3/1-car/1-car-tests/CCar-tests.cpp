@@ -1,29 +1,30 @@
 #include "stdafx.h"
 #include "../Car.h"
+#include <boost\test\unit_test.hpp>
 
 void CheckGearLimits(CCar & car, const int gear, const int minSpeed, const int maxSpeed)
 {
-	for (int i = 0; i < gear; ++i)
+	for (int i = 1; i < gear; ++i)
 	{
 		car.SetGear(i);
 		car.SetSpeed(minSpeed * (i + 1) / gear );
 	}
 	//car.SetGear(gear);
-	BOOST_CHECK_EQUAL(car.SetGear(gear), true);
+	car.SetGear(gear);
 	BOOST_CHECK_EQUAL(car.GetGear(), gear);
-	BOOST_CHECK_EQUAL(car.SetSpeed(minSpeed), true);
+	car.SetSpeed(minSpeed);
 	BOOST_CHECK_EQUAL(car.GetSpeed(), minSpeed);
-	BOOST_CHECK_EQUAL(car.SetSpeed(minSpeed - 1), false);
+	BOOST_REQUIRE_THROW(car.SetSpeed(minSpeed - 1), std::out_of_range);
 	BOOST_CHECK_EQUAL(car.GetSpeed(), minSpeed);
-	BOOST_CHECK_EQUAL(car.SetSpeed(maxSpeed), true);
+	car.SetSpeed(maxSpeed);
 	BOOST_CHECK_EQUAL(car.GetSpeed(), maxSpeed);
-	BOOST_CHECK_EQUAL(car.SetSpeed(maxSpeed + 1), false);
+	BOOST_REQUIRE_THROW(car.SetSpeed(maxSpeed + 1), std::out_of_range);
 	BOOST_CHECK_EQUAL(car.GetSpeed(), maxSpeed);
 }
 
 void CheckEnableGearMinSpeed(CCar & car, const int gear, const int minSpeed)
 {
-	for (int i = 0; i < gear; ++i)
+	for (int i = 1; i < gear; ++i)
 	{
 		car.SetGear(i);
 		car.SetSpeed(minSpeed * (i + 1) / gear);
@@ -32,12 +33,12 @@ void CheckEnableGearMinSpeed(CCar & car, const int gear, const int minSpeed)
 	BOOST_CHECK_EQUAL(car.GetGear(), gear - 1);
 	car.SetSpeed(minSpeed - 1);
 	BOOST_CHECK_EQUAL(car.GetSpeed(), minSpeed - 1);
-	BOOST_CHECK_EQUAL(car.SetGear(gear), false); // fail
+	BOOST_REQUIRE_THROW(car.SetGear(gear), std::out_of_range);
 	BOOST_CHECK_EQUAL(car.GetGear(), gear - 1);
 	BOOST_CHECK_EQUAL(car.GetSpeed(), minSpeed - 1);
 	car.SetSpeed(minSpeed);
 	BOOST_CHECK_EQUAL(car.GetSpeed(), minSpeed);
-	BOOST_CHECK_EQUAL(car.SetGear(gear), true); // cool
+	car.SetGear(gear); // cool
 	BOOST_CHECK_EQUAL(car.GetGear(), gear);
 	BOOST_CHECK_EQUAL(car.GetSpeed(), minSpeed);
 }
@@ -52,13 +53,13 @@ void CheckEnableGearMaxSpeed(CCar & car, const int gear, const int maxSpeed)
 		BOOST_CHECK_EQUAL(car.GetGear(), gear + 1);
 		car.SetSpeed(maxSpeed + 1);
 		BOOST_CHECK_EQUAL(car.GetSpeed(), maxSpeed + 1);
-		BOOST_CHECK_EQUAL(car.SetGear(gear), false); // fail
+		BOOST_REQUIRE_THROW(car.SetGear(gear), std::out_of_range);
 		BOOST_CHECK_EQUAL(car.GetGear(), gear + 1);
 		BOOST_CHECK_EQUAL(car.GetSpeed(), maxSpeed + 1);
 	
 		car.SetSpeed(maxSpeed);
 		BOOST_CHECK_EQUAL(car.GetSpeed(), maxSpeed);
-		BOOST_CHECK_EQUAL(car.SetGear(gear), true); // cool
+		car.SetGear(gear); // cool
 		BOOST_CHECK_EQUAL(car.GetGear(), gear);
 		BOOST_CHECK_EQUAL(car.GetSpeed(), maxSpeed);
 	}
@@ -93,12 +94,12 @@ BOOST_FIXTURE_TEST_SUITE(Test_Car_class, CarFixture)
 	}
 	BOOST_AUTO_TEST_CASE(can_not_select_gear_when_engine_is_turned_off)
 	{
-		BOOST_CHECK_EQUAL(car.SetGear(1), false);
+		BOOST_REQUIRE_THROW(car.SetSpeed(1), std::out_of_range);
 		BOOST_CHECK_EQUAL(car.GetGear(), 0);
 	}
 	BOOST_AUTO_TEST_CASE(can_not_select_speed_when_engine_is_turned_off)
 	{
-		BOOST_CHECK_EQUAL(car.SetSpeed(1), false);
+		BOOST_REQUIRE_THROW(car.SetSpeed(1), std::out_of_range);
 		BOOST_CHECK_EQUAL(car.GetSpeed(), 0);
 	}
 
@@ -127,7 +128,7 @@ BOOST_FIXTURE_TEST_SUITE(Test_Car_class, CarFixture)
 			{
 				car.SetGear(1);
 				BOOST_CHECK_EQUAL(car.IsEngineTurnedOn(), true);
-				BOOST_CHECK_EQUAL(car.TurnOffEngine(), false);
+				BOOST_REQUIRE_THROW(car.TurnOffEngine(), std::out_of_range);
 				BOOST_CHECK_EQUAL(car.IsEngineTurnedOn(), true);
 			}
 			BOOST_AUTO_TEST_CASE(can_not_if_speed_is_not_0)
@@ -136,98 +137,112 @@ BOOST_FIXTURE_TEST_SUITE(Test_Car_class, CarFixture)
 				car.SetSpeed(1);
 				car.SetGear(0);
 				BOOST_CHECK_EQUAL(car.IsEngineTurnedOn(), true);
-				BOOST_CHECK_EQUAL(car.TurnOffEngine(), false);
+				BOOST_REQUIRE_THROW(car.TurnOffEngine(), std::out_of_range);
 				BOOST_CHECK_EQUAL(car.IsEngineTurnedOn(), true);
 			}
 			BOOST_AUTO_TEST_CASE(can_if_gear_is_neutral_and_speed_is_0)
 			{
 				BOOST_CHECK_EQUAL(car.GetGear(), 0);
 				BOOST_CHECK_EQUAL(car.GetSpeed(), 0);
-				BOOST_CHECK_EQUAL(car.TurnOffEngine(), true);
+				//BOOST_CHECK_EQUAL(car.TurnOffEngine(), true);
+				car.TurnOffEngine();
 				BOOST_CHECK_EQUAL(car.IsEngineTurnedOn(), false);
 			}
 			BOOST_AUTO_TEST_CASE(after_turn_off_gear_is_neutral_and_speed_is_0)
 			{
-				BOOST_CHECK_EQUAL(car.TurnOffEngine(), true);
+				//BOOST_CHECK_EQUAL(car.TurnOffEngine(), true);
+				BOOST_CHECK_EQUAL(car.IsEngineTurnedOn(), true);
+				car.TurnOffEngine();
+				BOOST_CHECK_EQUAL(car.IsEngineTurnedOn(), false);
 				BOOST_CHECK_EQUAL(car.GetGear(), 0);
 				BOOST_CHECK_EQUAL(car.GetSpeed(), 0);
 			}
 		BOOST_AUTO_TEST_SUITE_END()
 
-		BOOST_AUTO_TEST_SUITE(Check_avalible_speed_range_for_each_gear)
-			BOOST_AUTO_TEST_CASE(check_for_reverse)
+		BOOST_AUTO_TEST_SUITE(Check_avalible_speed_range)
+			BOOST_AUTO_TEST_CASE(reverse_gear)
 			{
 				CheckGearLimits(car, -1, 0, 20);
 			}
-			BOOST_AUTO_TEST_CASE(check_for_neutral)
+			BOOST_AUTO_TEST_CASE(neutral_gear)
 			{
 				car.SetGear(1);
 				car.SetSpeed(10);
-				BOOST_CHECK_EQUAL(car.SetGear(0), true);
+				car.SetGear(0);
 				BOOST_CHECK_EQUAL(car.GetGear(), 0);
 				BOOST_CHECK_EQUAL(car.GetSpeed(), 10);
-				BOOST_CHECK_EQUAL(car.SetSpeed(11), false);
+				BOOST_REQUIRE_THROW(car.SetSpeed(11), std::out_of_range); //
 				BOOST_CHECK_EQUAL(car.GetSpeed(), 10);
-				BOOST_CHECK_EQUAL(car.SetSpeed(9), true);
+				car.SetSpeed(9);
 				BOOST_CHECK_EQUAL(car.GetSpeed(), 9);
 			}
-			BOOST_AUTO_TEST_CASE(check_for_1_gear)
+			BOOST_AUTO_TEST_CASE(for_1_gear)
 			{
 				CheckGearLimits(car, 1, 0, 30);
 			}
-			BOOST_AUTO_TEST_CASE(check_for_2_gear)
+			BOOST_AUTO_TEST_CASE(for_2_gear)
 			{
 				CheckGearLimits(car, 2, 20, 50);
 			}
-			BOOST_AUTO_TEST_CASE(check_for_3_gear)
+			BOOST_AUTO_TEST_CASE(for_3_gear)
 			{
 				CheckGearLimits(car, 3, 30, 60);
 			}
-			BOOST_AUTO_TEST_CASE(check_for_4_gear)
+			BOOST_AUTO_TEST_CASE(for_4_gear)
 			{
 				CheckGearLimits(car, 4, 40, 90);
 			}
-			BOOST_AUTO_TEST_CASE(check_for_5_gear)
+			BOOST_AUTO_TEST_CASE(for_5_gear)
 			{
 				CheckGearLimits(car, 5, 50, 150);
 			}
 		BOOST_AUTO_TEST_SUITE_END()
 
-		BOOST_AUTO_TEST_SUITE(Check_speed_range_enable_each_gear)
-			BOOST_AUTO_TEST_CASE(check_for_reverse)
-			{
-				car.SetGear(1);
-				BOOST_CHECK_EQUAL(car.GetGear(), 1);
-				BOOST_CHECK_EQUAL(car.GetSpeed(), 0);
-				BOOST_CHECK_EQUAL(car.SetGear(-1), true);
-				BOOST_CHECK_EQUAL(car.GetGear(), -1);
-
-				BOOST_CHECK_EQUAL(car.SetSpeed(1), true);
-				BOOST_CHECK_EQUAL(car.GetSpeed(), 1);
-				BOOST_CHECK_EQUAL(car.SetGear(-1), false);
-				BOOST_CHECK_EQUAL(car.GetSpeed(), 1);
-				car.SetGear(0);
-				BOOST_CHECK_EQUAL(car.SetSpeed(1), true);
-				BOOST_CHECK_EQUAL(car.GetSpeed(), 1);
-				BOOST_CHECK_EQUAL(car.GetGear(), 0);
-			}
-			BOOST_AUTO_TEST_CASE(check_1_gear)
+		BOOST_AUTO_TEST_SUITE(Check_speed_range_that)
+			BOOST_AUTO_TEST_SUITE(enable_reverse_gear)
+				BOOST_AUTO_TEST_CASE(from_Neutral_gear)
+				{
+					car.SetGear(1);
+					car.SetSpeed(1);
+					car.SetGear(0);
+					BOOST_CHECK_EQUAL(car.GetGear(), 0);
+					BOOST_CHECK_EQUAL(car.GetSpeed(), 1);
+					BOOST_REQUIRE_THROW(car.SetGear(-1), std::out_of_range);
+					car.SetSpeed(0);
+					BOOST_CHECK_EQUAL(car.GetGear(), 0);
+					car.SetGear(-1);
+					BOOST_CHECK_EQUAL(car.GetGear(), -1);
+				}
+				BOOST_AUTO_TEST_CASE(from_1_gear)
+				{
+					car.SetGear(1);
+					car.SetSpeed(1);
+					BOOST_CHECK_EQUAL(car.GetGear(), 1);
+					BOOST_CHECK_EQUAL(car.GetSpeed(), 1);
+					BOOST_REQUIRE_THROW(car.SetGear(-1), std::out_of_range);
+					car.SetSpeed(0);
+					BOOST_CHECK_EQUAL(car.GetGear(), 0);
+					car.SetGear(-1);
+					BOOST_CHECK_EQUAL(car.GetGear(), -1);
+				}
+			BOOST_AUTO_TEST_SUITE_END()
+			BOOST_AUTO_TEST_CASE(enable_1_gear)
 			{
 				CheckEnableGearSpeed(car, 1, 0, 30);
 			}
-			BOOST_AUTO_TEST_CASE(check_2_gear)
+			BOOST_AUTO_TEST_CASE(enable_2_gear)
 			{
 				CheckEnableGearSpeed(car, 2, 20, 50);
 			}
-			BOOST_AUTO_TEST_CASE(check_3_gear)
+			BOOST_AUTO_TEST_CASE(enable_3_gear)
 			{
 				CheckEnableGearSpeed(car, 3, 30, 60);
 			}
-			BOOST_AUTO_TEST_CASE(check_4_gear)
+			BOOST_AUTO_TEST_CASE(enable_4_gear)
 			{
 				CheckEnableGearSpeed(car, 4, 40, 90);
 			}
-			BOOST_AUTO_TEST_CASE(check_5_gear)
+			BOOST_AUTO_TEST_CASE(enable_5_gear)
 			{
 				CheckEnableGearSpeed(car, 5, 50, 150);
 			}

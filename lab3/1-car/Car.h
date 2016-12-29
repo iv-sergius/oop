@@ -18,10 +18,10 @@ public:
 	};
 	CCar();
 	~CCar() = default;
-	bool TurnOnEngine();
-	bool TurnOffEngine();
-	bool SetGear(int gear);
-	bool SetSpeed(unsigned speed);
+	void TurnOnEngine();
+	void TurnOffEngine();
+	void SetGear(int gear);
+	void SetSpeed(unsigned speed);
 	bool IsEngineTurnedOn()const;
 	int GetGear()const;
 	unsigned GetSpeed()const;

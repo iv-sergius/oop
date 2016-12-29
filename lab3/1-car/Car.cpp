@@ -23,40 +23,53 @@ CCar::CCar()
 
 }
 
-bool CCar::TurnOnEngine()
+void CCar::TurnOnEngine()
 {
 	m_isTurnOn = true;
-	return true;
 }
 
-bool CCar::TurnOffEngine()
+void CCar::TurnOffEngine()
 {
 	if (m_speed == 0 && m_gear == Neutral)
 	{
 		m_isTurnOn = false;
-		return true;
 	}
 	else
 	{
-		return false;
+		throw std::out_of_range("To turn off need 0 speed on Neutral\n");
 	}
 }
 
-bool CCar::SetGear(int gear)
+void CCar::SetGear(int gear)
 {
-	CarGear carGear = static_cast <CarGear>(gear);
-	if (m_isTurnOn && IsSpeedInGearLimits(carGear, m_speed))
+	if (m_isTurnOn)
 	{
-		m_gear = carGear;
-		return true;
+		throw std::out_of_range("Can't set gear then endgine is turn off\n");
+	}
+	CarGear newGear = static_cast <CarGear>(gear);
+	if (!IsSpeedInGearLimits(newGear, m_speed))
+	{
+		throw std::out_of_range("Can't set gear on this speed\n");
+	}
+	if (newGear != CarGear::Reverse)
+	{
+		m_gear = newGear;
 	}
 	else
 	{
-		return false;
+		if ((m_gear == CarGear::Neutral || m_gear == CarGear::First) && m_speed == 0)
+		{
+			m_gear = newGear;
+		}
+		else
+		{
+			throw std::out_of_range("Reverse gear avalibe only on 0 speed and from Neutral or Reverse gear\n");
+		}
 	}
+
 }
 
-bool CCar::SetSpeed(unsigned speed)
+void CCar::SetSpeed(unsigned speed)
 {
 	if (IsSpeedInGearLimits(m_gear, speed))
 	{
@@ -66,15 +79,24 @@ bool CCar::SetSpeed(unsigned speed)
 		}
 		else if (m_gear == CarGear::Neutral)
 		{
-			m_speed = speed;
+			if (speed <= abs(m_speed))
+			{
+				m_speed = speed;
+			}
+			else
+			{
+				throw std::out_of_range("Can't to speed up on Neutral gear");
+			}
 		}
 		else
 		{
 			m_speed = speed;
 		}
-		return true;
 	}
-	return false;
+	else
+	{
+		throw std::out_of_range("Speed lie out of gear limits");
+	}
 }
 
 bool CCar::IsEngineTurnedOn() const
@@ -94,13 +116,6 @@ unsigned CCar::GetSpeed() const
 
 bool CCar::IsSpeedInGearLimits(CarGear gear, int speed)
 {
-	if (gear == CarGear::Neutral)
-	{
-		return abs(speed) <= abs(m_speed);
-	}
-	else
-	{
-		return speed >= m_gearLimits.at(gear).min && speed <= m_gearLimits.at(gear).max;
-	}
+	return speed >= m_gearLimits.at(gear).min && speed <= m_gearLimits.at(gear).max;
 }
 
