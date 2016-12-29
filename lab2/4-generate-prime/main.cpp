@@ -27,11 +27,8 @@ int main(int argv, char * argc[])
 		return 2;
 	}
 	
-	if (upperBound < MAX_UPPER_BOUND)
-	{
-		std::set<size_t> primeNumbersSet = GenerateSetOfPrimes(upperBound);	
-		WriteSet(primeNumbersSet);
-	}
+	std::set<size_t> primeNumbersSet = GenerateSetOfPrimes(upperBound);	
+	WriteSet(primeNumbersSet);
 
 	return 0;
 }
