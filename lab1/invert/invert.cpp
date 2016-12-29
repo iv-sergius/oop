@@ -5,38 +5,14 @@
 #include <iomanip>
 #include <array>
 
-// DBL_EPSILON
-
 const size_t MatrixDim = 3;
 
 typedef std::array<std::array<double, MatrixDim>, MatrixDim> SquareMatrix;
 
-//
-//class Matrix
-//{
-//public:
-//	Matrix(size_t dimension);
-//	~Matrix();
-//
-//private:
-//	size_t m_dim;
-//	double **m_matrix;
-//};
-//
-//Matrix::Matrix(size_t dimension)
-//{
-//	m_dim = dimension;
-//	m_matrix = new (*double)[m_dim];
-//}
-//
-//Matrix::~Matrix()
-//{
-//	delete[] m_matrix;
-//}
-
 int ReadFromStream(std::istream &inStream, SquareMatrix &matrix)
 {
 	for (size_t i = 0; i < MatrixDim; ++i)
+	{
 		for (size_t j = 0; j < MatrixDim; ++j)
 		{
 			if (!(inStream >> matrix[i][j]))
@@ -45,6 +21,7 @@ int ReadFromStream(std::istream &inStream, SquareMatrix &matrix)
 				return 1;
 			}
 		}
+	}
 	return 0;
 }
 
@@ -77,10 +54,12 @@ void GaussMatrixTransformation(SquareMatrix &matrix, size_t rowChange, size_t ro
 void SetIdentity(SquareMatrix &matrix)
 {
 	for (size_t col = 0; col < MatrixDim; ++col)
+	{
 		for (size_t row = 0; row < MatrixDim; ++row)
 		{
 			matrix[col][row] = (col == row) ? 1.0 : 0.0;
 		}
+	}
 }
 
 bool TryMakeDiagonalElementNotZero(SquareMatrix &originalMatrix, SquareMatrix &invertedMatrix, size_t const col)
@@ -105,17 +84,16 @@ bool TryMakeDiagonalElementNotZero(SquareMatrix &originalMatrix, SquareMatrix &i
 	}
 }
 
-bool InvertMatrix(SquareMatrix const originalMatrix, SquareMatrix &invertedMatrix)
+bool InvertMatrix(SquareMatrix originalMatrix, SquareMatrix &invertedMatrix)
 {
-	SquareMatrix copyOfOriginalMatrix = originalMatrix;
 	double transformCoefficient;
 	SetIdentity(invertedMatrix);
 	for (size_t col = 0; col < MatrixDim; ++col)
 	{
 		// normalize if left top element is 0
-		if (abs(copyOfOriginalMatrix[col][col]) < 2 * DBL_EPSILON)
+		if (abs(originalMatrix[col][col]) < 2 * DBL_EPSILON)
 		{
-			if (TryMakeDiagonalElementNotZero(copyOfOriginalMatrix, invertedMatrix, col) == false)
+			if (TryMakeDiagonalElementNotZero(originalMatrix, invertedMatrix, col) == false)
 			{
 				std::cerr << "Matrix is singular" << std::endl;
 				return false;
@@ -124,29 +102,31 @@ bool InvertMatrix(SquareMatrix const originalMatrix, SquareMatrix &invertedMatri
 		for (size_t row = col + 1; row < MatrixDim; ++row)
 		{
 			// go down
-			transformCoefficient = GetGaussCoefficient(copyOfOriginalMatrix, row, col, col);
-			GaussMatrixTransformation(copyOfOriginalMatrix, row, col, transformCoefficient);
+			transformCoefficient = GetGaussCoefficient(originalMatrix, row, col, col);
+			GaussMatrixTransformation(originalMatrix, row, col, transformCoefficient);
 			GaussMatrixTransformation(invertedMatrix, row, col, transformCoefficient);
 		}
 	}
 
-	for (size_t col = MatrixDim - 1 ; col > 0; --col)
+	for (size_t col = MatrixDim - 1; col > 0; --col)
+	{
 		for (size_t row = 0; row < col; ++row)
 		{
 			// go up
-			transformCoefficient = GetGaussCoefficient(copyOfOriginalMatrix, row, col, col);
-			GaussMatrixTransformation(copyOfOriginalMatrix, row, col, transformCoefficient);
+			transformCoefficient = GetGaussCoefficient(originalMatrix, row, col, col);
+			GaussMatrixTransformation(originalMatrix, row, col, transformCoefficient);
 			GaussMatrixTransformation(invertedMatrix, row, col, transformCoefficient);
 		}
+	}
 	for (size_t col = 0; col < MatrixDim; ++col)
+	{
 		for (size_t row = 0; row < MatrixDim; ++row)
 		{
-			invertedMatrix[row][col] = invertedMatrix[row][col] / copyOfOriginalMatrix[row][row];
+			invertedMatrix[row][col] = invertedMatrix[row][col] / originalMatrix[row][row];
 		}
+	}
 	return true;
 }
-
-
 
 bool InvertMatrix(std::istream &inStream, std::ostream &outStream)
 {
