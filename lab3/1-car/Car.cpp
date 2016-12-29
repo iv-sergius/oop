@@ -42,9 +42,9 @@ void CCar::TurnOffEngine()
 
 void CCar::SetGear(int gear)
 {
-	if (m_isTurnOn)
+	if (!m_isTurnOn)
 	{
-		throw std::out_of_range("Can't set gear then endgine is turn off\n");
+		throw std::out_of_range("Can't set gear then engine is turn off\n");
 	}
 	CarGear newGear = static_cast <CarGear>(gear);
 	if (!IsSpeedInGearLimits(newGear, m_speed))

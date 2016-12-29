@@ -221,7 +221,7 @@ BOOST_FIXTURE_TEST_SUITE(Test_Car_class, CarFixture)
 					BOOST_CHECK_EQUAL(car.GetSpeed(), 1);
 					BOOST_REQUIRE_THROW(car.SetGear(-1), std::out_of_range);
 					car.SetSpeed(0);
-					BOOST_CHECK_EQUAL(car.GetGear(), 0);
+					BOOST_CHECK_EQUAL(car.GetGear(), 1);
 					car.SetGear(-1);
 					BOOST_CHECK_EQUAL(car.GetGear(), -1);
 				}
