@@ -1,4 +1,55 @@
+echo on
 set PROGRAM="%~1"
+
+REM Incorrect number of arguments
+%PROGRAM% 2 2 > %TEMP%\test.txt
+if not ERRORLEVEL 1 goto errIncorrect
+
+%PROGRAM% 2 2 > %TEMP%\test.txt
+if not ERRORLEVEL 1 goto errIncorrect
+
+REM Incorrect source notation
+%PROGRAM% 0 2 0 > %TEMP%\test.txt
+if not ERRORLEVEL 1 goto errIncorrect
+
+%PROGRAM% 1 2 0 > %TEMP%\test.txt
+if not ERRORLEVEL 1 goto errIncorrect
+
+%PROGRAM% -2 2 0 > %TEMP%\test.txt
+if not ERRORLEVEL 1 goto errIncorrect
+
+REM Incorrect destination notation
+%PROGRAM% 2 0 0 > %TEMP%\test.txt
+if not ERRORLEVEL 1 goto errIncorrect
+
+%PROGRAM% 2 1 0 > %TEMP%\test.txt
+if not ERRORLEVEL 1 goto errIncorrect
+
+%PROGRAM% 2 -2 0 > %TEMP%\test.txt
+if not ERRORLEVEL 1 goto errIncorrect
+
+REM Sybmols in value lie out radix
+%PROGRAM% 2 2 A > %TEMP%\test.txt
+if not ERRORLEVEL 1 goto errIncorrect
+
+%PROGRAM% 2 2 2 > %TEMP%\test.txt
+if not ERRORLEVEL 1 goto errIncorrect
+
+%PROGRAM% 2 2 A > %TEMP%\test.txt
+if not ERRORLEVEL 1 goto errIncorrect
+
+%PROGRAM% 10 2 A > %TEMP%\test.txt
+if not ERRORLEVEL 1 goto errIncorrect
+
+%PROGRAM% 35 2 Z > %TEMP%\test.txt
+if not ERRORLEVEL 1 goto errIncorrect
+
+%PROGRAM% 10 2 -214748A > %TEMP%\test.txt
+if not ERRORLEVEL 1 goto errRun
+
+%PROGRAM% 1 2 -214748A > %TEMP%\test.txt
+if not ERRORLEVEL 1 goto errRun
+
 
 %PROGRAM% 10 16 255 > %TEMP%\test.txt
 if ERRORLEVEL 1 goto errRun
@@ -40,21 +91,15 @@ if ERRORLEVEL 1 goto errRun
 fc.exe test\test-2147483648_10_2.txt %TEMP%\test.txt
 if ERRORLEVEL 1 goto err
 
-%PROGRAM% -10 2 2147483649 > %TEMP%\test.txt
-if not ERRORLEVEL 1 goto errRun
-
-%PROGRAM% 10 2 -214748A > %TEMP%\test.txt
-if not ERRORLEVEL 1 goto errRun
-
-%PROGRAM% 1 2 -214748A > %TEMP%\test.txt
-if not ERRORLEVEL 1 goto errRun
-
-
 echo Program testing succcesed
 exit 0
 
+:errIncorrect
+echo Program testing failed : Program works on incorrect data
+exit 1
+
 :errRun
-echo echo Program testing failed : Program exit with error
+echo Program testing failed : Program exit with error
 exit 1
 
 :err
