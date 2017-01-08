@@ -13,13 +13,13 @@ public:
 	// Избавляемся от предупреждения компилятора о том, что он не сможет сгенерировать оператор присваивания
 	// CRemoteControl& operator=(const CRemoteControl &) = delete;
 private:
-	bool EngineOn(std::istream & args);
-	bool EngineOff(std::istream & args);
-	bool Info(std::istream & args);
-	bool SetGear(std::istream & args);
-	bool SetSpeed(std::istream & args);
+	void EngineOn(std::istream & args);
+	void EngineOff(std::istream & args);
+	void Info(std::istream & args);
+	void SetGear(std::istream & args);
+	void SetSpeed(std::istream & args);
 private:
-	typedef std::map<std::string, std::function<bool(std::istream & args)>> ActionMap;
+	typedef std::map<std::string, std::function<void(std::istream & args)>> ActionMap;
 
 	CCar & m_car;
 	std::istream & m_input;

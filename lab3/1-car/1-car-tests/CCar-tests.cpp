@@ -164,7 +164,7 @@ BOOST_FIXTURE_TEST_SUITE(Car, CarFixture)
 			}
 		BOOST_AUTO_TEST_SUITE_END()
 
-		BOOST_AUTO_TEST_SUITE(check_avalible_speed_range)
+		BOOST_AUTO_TEST_SUITE(check_SetSpeed)
 			BOOST_AUTO_TEST_CASE(for_Reverse_gear)
 			{
 				CheckGearLimits(car, -1, 0, 20);
@@ -203,7 +203,7 @@ BOOST_FIXTURE_TEST_SUITE(Car, CarFixture)
 			}
 		BOOST_AUTO_TEST_SUITE_END()
 
-		BOOST_AUTO_TEST_SUITE(Check_speed_range_that)
+		BOOST_AUTO_TEST_SUITE(check_SetGear)
 			BOOST_AUTO_TEST_SUITE(enable_Reverse_gear)
 				BOOST_AUTO_TEST_CASE(from_Neutral_gear)
 				{
@@ -251,6 +251,12 @@ BOOST_FIXTURE_TEST_SUITE(Car, CarFixture)
 			{
 				CheckEnableGearSpeed(car, 5, 50, 150);
 			}
+			BOOST_AUTO_TEST_CASE(throw_for_incorrect_gear)
+			{
+				BOOST_REQUIRE_THROW(car.SetGear(-2), std::out_of_range);
+				BOOST_REQUIRE_THROW(car.SetGear(6), std::out_of_range);
+			}
+
 		BOOST_AUTO_TEST_SUITE_END()
 
 	BOOST_AUTO_TEST_SUITE_END()

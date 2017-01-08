@@ -46,6 +46,10 @@ void CCar::SetGear(int gear)
 	{
 		throw std::out_of_range("Can't set gear then engine is turn off");
 	}
+	if (gear < MIN_GEAR || gear > MAX_GEAR)
+	{
+		throw std::out_of_range("This gear is unavailable on this car");
+	}
 	CarGear newGear = static_cast <CarGear>(gear);
 	if (!IsSpeedInGearLimits(newGear, m_speed))
 	{
@@ -63,7 +67,7 @@ void CCar::SetGear(int gear)
 		}
 		else
 		{
-			throw std::out_of_range("Reverse gear avalibe only on 0 speed and from Neutral or Reverse gear");
+			throw std::out_of_range("Reverse gear avalibe only on 0 speed and from Neutral or 1 gear");
 		}
 	}
 
@@ -71,6 +75,10 @@ void CCar::SetGear(int gear)
 
 void CCar::SetSpeed(unsigned speed)
 {
+	if (!m_isTurnOn)
+	{
+		throw std::out_of_range("Can't set speed then engine is turn off");
+	}
 	if (IsSpeedInGearLimits(m_gear, speed))
 	{
 		if (m_gear == CarGear::Reverse)
