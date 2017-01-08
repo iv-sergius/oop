@@ -36,7 +36,7 @@ void CCar::TurnOffEngine()
 	}
 	else
 	{
-		throw std::out_of_range("To turn off need Neutral gear and speed 0\n");
+		throw std::out_of_range("To turn off need Neutral gear and speed 0");
 	}
 }
 
@@ -44,12 +44,12 @@ void CCar::SetGear(int gear)
 {
 	if (!m_isTurnOn)
 	{
-		throw std::out_of_range("Can't set gear then engine is turn off\n");
+		throw std::out_of_range("Can't set gear then engine is turn off");
 	}
 	CarGear newGear = static_cast <CarGear>(gear);
 	if (!IsSpeedInGearLimits(newGear, m_speed))
 	{
-		throw std::out_of_range("Can't set gear on this speed\n");
+		throw std::out_of_range("Can't set gear on this speed");
 	}
 	if (newGear != CarGear::Reverse)
 	{
@@ -63,7 +63,7 @@ void CCar::SetGear(int gear)
 		}
 		else
 		{
-			throw std::out_of_range("Reverse gear avalibe only on 0 speed and from Neutral or Reverse gear\n");
+			throw std::out_of_range("Reverse gear avalibe only on 0 speed and from Neutral or Reverse gear");
 		}
 	}
 
@@ -79,7 +79,7 @@ void CCar::SetSpeed(unsigned speed)
 		}
 		else if (m_gear == CarGear::Neutral)
 		{
-			if (speed <= abs(m_speed))
+			if (speed <= static_cast<unsigned int>(abs(m_speed)))
 			{
 				m_speed = speed;
 			}

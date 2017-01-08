@@ -1,7 +1,22 @@
 // Точка входа 
 #include "stdafx.h"
+#include "RemoteControl.h"
+#include "Car.h"
 
-int main(int argv, char *argc[])
+
+using namespace std;
+
+void main()
 {
-	return 0;
+	CCar car;
+	CRemoteControl remoteControl(car, cin, cout);
+
+	while (!cin.eof() && !cin.fail())
+	{
+		cout << "> ";
+		if (!remoteControl.HandleCommand())
+		{
+			cout << "Unknown command!" << endl;
+		}
+	}
 }
