@@ -16,7 +16,7 @@ void main()
 		cout << "> ";
 		if (!remoteControl.HandleCommand())
 		{
-			cout << "Unknown command!" << endl;
+			cout << "Unknown command" << endl;
 		}
 	}
 }
