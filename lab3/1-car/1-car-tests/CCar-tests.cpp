@@ -86,26 +86,28 @@ struct CarFixture
 	CCar car;
 };
 // Car
-BOOST_FIXTURE_TEST_SUITE(Test_Car_class, CarFixture)
+BOOST_FIXTURE_TEST_SUITE(Car, CarFixture)
 
 	BOOST_AUTO_TEST_CASE(engine_is_turned_off_by_default)
 	{
 		BOOST_CHECK(!car.IsEngineTurnedOn());
 	}
-	BOOST_AUTO_TEST_CASE(can_not_select_gear_when_engine_is_turned_off)
-	{
-		BOOST_REQUIRE_THROW(car.SetSpeed(1), std::out_of_range);
-		BOOST_CHECK_EQUAL(car.GetGear(), 0);
-	}
-	BOOST_AUTO_TEST_CASE(can_not_select_speed_when_engine_is_turned_off)
-	{
-		BOOST_REQUIRE_THROW(car.SetSpeed(1), std::out_of_range);
-		BOOST_CHECK_EQUAL(car.GetSpeed(), 0);
-	}
+	BOOST_AUTO_TEST_SUITE(when_engine_is_turned_off)
+		BOOST_AUTO_TEST_CASE(can_not_select_gear)
+		{
+			BOOST_REQUIRE_THROW(car.SetGear(1), std::out_of_range);
+			BOOST_CHECK_EQUAL(car.GetGear(), 0);
+		}
+		BOOST_AUTO_TEST_CASE(can_not_select_speed)
+		{
+			BOOST_REQUIRE_THROW(car.SetSpeed(1), std::out_of_range);
+			BOOST_CHECK_EQUAL(car.GetSpeed(), 0);
+		}
+	BOOST_AUTO_TEST_SUITE_END()
 
-	BOOST_AUTO_TEST_SUITE(Try_turn_on_engine)
+	BOOST_AUTO_TEST_SUITE(if_turn_on_engine)
 
-		BOOST_AUTO_TEST_CASE(after_this_gear_is_neutral_and_speed_is_0)
+		BOOST_AUTO_TEST_CASE(gear_is_neutral_and_speed_is_0)
 		{
 			car.TurnOnEngine();
 			BOOST_CHECK_EQUAL(car.GetGear(), 0);
@@ -122,11 +124,13 @@ BOOST_FIXTURE_TEST_SUITE(Test_Car_class, CarFixture)
 	};
 	BOOST_FIXTURE_TEST_SUITE(When_engine_is_turned_on, when_turned_on_)
 
-		BOOST_AUTO_TEST_SUITE(Try_turn_off_engine)
+		BOOST_AUTO_TEST_SUITE(turn_off_engine)
 
 			BOOST_AUTO_TEST_CASE(can_not_if_gear_is_not_neutral)
 			{
 				car.SetGear(1);
+				BOOST_CHECK_EQUAL(car.GetSpeed(), 0);
+				BOOST_CHECK_EQUAL(car.GetGear(), 1);
 				BOOST_CHECK_EQUAL(car.IsEngineTurnedOn(), true);
 				BOOST_REQUIRE_THROW(car.TurnOffEngine(), std::out_of_range);
 				BOOST_CHECK_EQUAL(car.IsEngineTurnedOn(), true);
@@ -136,6 +140,8 @@ BOOST_FIXTURE_TEST_SUITE(Test_Car_class, CarFixture)
 				car.SetGear(1);
 				car.SetSpeed(1);
 				car.SetGear(0);
+				BOOST_CHECK_EQUAL(car.GetSpeed(), 1);
+				BOOST_CHECK_EQUAL(car.GetGear(), 0);
 				BOOST_CHECK_EQUAL(car.IsEngineTurnedOn(), true);
 				BOOST_REQUIRE_THROW(car.TurnOffEngine(), std::out_of_range);
 				BOOST_CHECK_EQUAL(car.IsEngineTurnedOn(), true);
@@ -144,13 +150,12 @@ BOOST_FIXTURE_TEST_SUITE(Test_Car_class, CarFixture)
 			{
 				BOOST_CHECK_EQUAL(car.GetGear(), 0);
 				BOOST_CHECK_EQUAL(car.GetSpeed(), 0);
-				//BOOST_CHECK_EQUAL(car.TurnOffEngine(), true);
+				BOOST_CHECK_EQUAL(car.IsEngineTurnedOn(), true);
 				car.TurnOffEngine();
 				BOOST_CHECK_EQUAL(car.IsEngineTurnedOn(), false);
 			}
 			BOOST_AUTO_TEST_CASE(after_turn_off_gear_is_neutral_and_speed_is_0)
 			{
-				//BOOST_CHECK_EQUAL(car.TurnOffEngine(), true);
 				BOOST_CHECK_EQUAL(car.IsEngineTurnedOn(), true);
 				car.TurnOffEngine();
 				BOOST_CHECK_EQUAL(car.IsEngineTurnedOn(), false);
@@ -159,12 +164,12 @@ BOOST_FIXTURE_TEST_SUITE(Test_Car_class, CarFixture)
 			}
 		BOOST_AUTO_TEST_SUITE_END()
 
-		BOOST_AUTO_TEST_SUITE(Check_avalible_speed_range)
-			BOOST_AUTO_TEST_CASE(reverse_gear)
+		BOOST_AUTO_TEST_SUITE(check_avalible_speed_range)
+			BOOST_AUTO_TEST_CASE(for_Reverse_gear)
 			{
 				CheckGearLimits(car, -1, 0, 20);
 			}
-			BOOST_AUTO_TEST_CASE(neutral_gear)
+			BOOST_AUTO_TEST_CASE(for_Neutral_gear)
 			{
 				car.SetGear(1);
 				car.SetSpeed(10);
@@ -199,7 +204,7 @@ BOOST_FIXTURE_TEST_SUITE(Test_Car_class, CarFixture)
 		BOOST_AUTO_TEST_SUITE_END()
 
 		BOOST_AUTO_TEST_SUITE(Check_speed_range_that)
-			BOOST_AUTO_TEST_SUITE(enable_reverse_gear)
+			BOOST_AUTO_TEST_SUITE(enable_Reverse_gear)
 				BOOST_AUTO_TEST_CASE(from_Neutral_gear)
 				{
 					car.SetGear(1);

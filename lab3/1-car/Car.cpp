@@ -36,7 +36,7 @@ void CCar::TurnOffEngine()
 	}
 	else
 	{
-		throw std::out_of_range("To turn off need 0 speed on Neutral\n");
+		throw std::out_of_range("To turn off need Neutral gear and speed 0\n");
 	}
 }
 
