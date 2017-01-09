@@ -10,7 +10,7 @@ EquationRoot2 Solve2(double a, double b, double c)
 		throw std::invalid_argument("Degree must be equal 2\n");
 	}
 	EquationRoot2 solution;
-	double D = b * b - 4 * a * c;
+	double D = b * b - 4. * a * c;
 	if (abs(D) < DBL_EPSILON) // 1 root
 	{
 		solution.numRoots = 1;
@@ -72,9 +72,10 @@ EquationRoot4 Solve4(double a, double b, double c, double d, double e)
 	double C = d / a;
 	double D = e / a;
 
-	double y0 = Root3(1, -B, 4 * D - A * C, 4 * B * D - A * A * D - C * C);
-	double alpha = sqrt(A * A / 4. + y0);
-	double beta = sqrt(y0 * y0 / 4. - D);
+	double y0 = Root3(1., -B, A * C - 4. * D, 4. * B * D - A * A * D - C * C);
+	double alpha = sqrt(A * A / 4. - B + y0);
+	double beta = ((A / 2) * y0 - C) / alpha/ 2.;
+//	assert(	abs(beta) - sqrt(y0 * y0 / 4. - D) < 2 * std::max(1., abs(y0)) * DBL_EPSILON );
 	
 	EquationRoot2 subSolution;
 	subSolution = Solve2(1., A / 2. + alpha, y0 / 2. + beta);
@@ -95,14 +96,18 @@ double Root3(double a, double b, double c, double d)
 	b /= a;
 	c /= a;
 	d /= a;
-	a = 1;
+	a = 1.;
 
 	double p = c - b * b / 3.;
 	double q = d + b * b * b * 2. / 27 - b * c / 3.;
 
 	double Q = pow(q / 2., 2) + pow(p / 3., 3);
 	double y, z;
-	if (Q >= 0.)
+	if (abs(Q) < DBL_EPSILON) 
+	{
+		y = 0.;
+	}
+	else if (Q > 0.)
 	{
 		z = (q < 0) ? pow(- q / 2. + sqrt(Q), 1 / 3.) : - pow(q / 2. + sqrt(Q), 1 / 3.);
 		y = z - p / 3. / z;
