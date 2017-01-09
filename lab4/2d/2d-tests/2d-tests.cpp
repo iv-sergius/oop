@@ -1,17 +1,23 @@
 // 2d-tests.cpp : Defines the entry point for the console application.
 //
 #include "stdafx.h"
-#include "../2d.h"
+#include "2d-tests.h"
 
-struct TestPoint
+void VerifyPoint(const CPoint &point, double x, double y)
 {
-	CPoint point;
-};
+	BOOST_REQUIRE_CLOSE(point.x, x, R_EPS);
+	BOOST_REQUIRE_CLOSE(point.y, y, R_EPS);
+}
 
-BOOST_FIXTURE_TEST_SUITE(Point_class, TestPoint)
-	BOOST_AUTO_TEST_CASE(constuct_0_point_by_default)
-	{
-		BOOST_CHECK_EQUAL(point.x, 0);
-		BOOST_CHECK_EQUAL(point.y, 0);
-	}
-BOOST_AUTO_TEST_SUITE_END()
+void VerifyPoint(const CPoint &point, const CPoint &expectedPoint)
+{
+	BOOST_REQUIRE_CLOSE(point.x, expectedPoint.x, R_EPS);
+	BOOST_REQUIRE_CLOSE(point.y, expectedPoint.y, R_EPS);
+}
+
+void VerifyLineSegment(const CLineSegment &line, const CPoint &expectedStart, const CPoint &expectedEnd, const std::string &expectedColor)
+{
+	VerifyPoint(line.GetStartPoint(), expectedStart);
+	VerifyPoint(line.GetEndPoint(), expectedEnd);
+	BOOST_CHECK_EQUAL(line.GetOutlineColor(), expectedColor);
+}
