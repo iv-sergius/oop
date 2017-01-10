@@ -3,16 +3,21 @@
 #include "stdafx.h"
 #include "2d-tests.h"
 
+void VerifyDouble(const double value, const double expectedValue)
+{
+	BOOST_REQUIRE_CLOSE(value, expectedValue, R_EPS);
+}
+
 void VerifyPoint(const CPoint &point, double x, double y)
 {
-	BOOST_REQUIRE_CLOSE(point.x, x, R_EPS);
-	BOOST_REQUIRE_CLOSE(point.y, y, R_EPS);
+	VerifyDouble(point.x, x);
+	VerifyDouble(point.y, y);
 }
 
 void VerifyPoint(const CPoint &point, const CPoint &expectedPoint)
 {
-	BOOST_REQUIRE_CLOSE(point.x, expectedPoint.x, R_EPS);
-	BOOST_REQUIRE_CLOSE(point.y, expectedPoint.y, R_EPS);
+	VerifyDouble(point.x, expectedPoint.x);
+	VerifyDouble(point.y, expectedPoint.y);
 }
 
 void VerifyLineSegment(const CLineSegment &line, const CPoint &expectedStart, const CPoint &expectedEnd, const std::string &expectedColor)

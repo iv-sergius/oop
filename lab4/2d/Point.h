@@ -4,10 +4,9 @@
 class CPoint
 {
 public:
-	CPoint();
-	CPoint(double x, double y);
-	double x = 0;
-	double y = 0;
+	CPoint(double x = 0, double y = 0);
+	double x;
+	double y;
 };
 
 double abs(const CPoint &p);

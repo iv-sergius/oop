@@ -10,6 +10,8 @@
 #include <stdio.h>
 #include <tchar.h>
 #include <string>
+#include <sstream>
+#include <iomanip>
 //#include <initializer_list>
 
 

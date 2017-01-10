@@ -10,7 +10,7 @@ CLineSegment::CLineSegment(const CPoint & point1, const CPoint & point2, const s
 
 CPoint CLineSegment::GetStartPoint() const
 {
-	return CPoint();
+	return m_vertex1;
 }
 
 CPoint CLineSegment::GetEndPoint() const
@@ -30,5 +30,13 @@ double CLineSegment::GetArea() const
 
 std::string CLineSegment::ToString() const
 {
-	return "";
+	std::ostringstream lineString;
+	lineString << std::fixed << std::setprecision(3);
+	lineString << "LineSegment  "
+		<< m_vertex1.x << " "
+		<< m_vertex1.y << "  "
+		<< m_vertex2.x << " "
+		<< m_vertex2.y << "  "
+		<< GetOutlineColor();
+	return lineString.str();
 }

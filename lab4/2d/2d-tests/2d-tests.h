@@ -12,6 +12,8 @@
 // 
 static const double R_EPS = 1e-10;
 
+void VerifyDouble(const double value, const double expectedValue);
+
 void VerifyPoint(const CPoint &point, double x, double y);
 
 void VerifyPoint(const CPoint &point, const CPoint &expectedPoint);
