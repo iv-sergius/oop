@@ -2,9 +2,15 @@
 #include "SolidShape.h"
 #include "Point.h"
 
-class CTraingle : public ISolidShape
+class CTriangle : public CSolidShape
 {
 public:
+	CTriangle(const CPoint &vertex1, const CPoint &vertex2, const CPoint &vertex3, const std::string &outlineColor, const std::string &fillColor);
+
+	double GetArea() const;
+	double GetPerimeter() const;
+	std::string ToString() const;
+
 	CPoint GetVertex1() const;
 	CPoint GetVertex2() const;
 	CPoint GetVertex3() const;

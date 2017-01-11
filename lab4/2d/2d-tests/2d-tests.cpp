@@ -34,3 +34,20 @@ void VerifyCircle(const CCircle &circle, const CPoint &expectedCenter, double ex
 	BOOST_CHECK_EQUAL(circle.GetOutlineColor(), expectedOutlineColor);
 	BOOST_CHECK_EQUAL(circle.GetFillColor(), expectedFillColor);
 }
+
+void VerifyRectangle(const CRectangle & rectangle, const CPoint & expectedLeftTop, const CPoint & expectedRightBottom, const std::string & expectedOutlineColor, const std::string & expectedFillColor)
+{
+	VerifyPoint(rectangle.GetLeftTop(), expectedLeftTop);
+	VerifyPoint(rectangle.GetRightBottom(), expectedRightBottom);
+	BOOST_CHECK_EQUAL(rectangle.GetOutlineColor(), expectedOutlineColor);
+	BOOST_CHECK_EQUAL(rectangle.GetFillColor(), expectedFillColor);
+}
+
+void VerifyTriangle(const CTriangle & triangle, const CPoint & expectedVertex1, const CPoint & expectedVertex2, const CPoint & expectedVertex3, const std::string & expectedOutlineColor, const std::string & expectedFillColor)
+{
+	VerifyPoint(triangle.GetVertex1(), expectedVertex1);
+	VerifyPoint(triangle.GetVertex2(), expectedVertex2);
+	VerifyPoint(triangle.GetVertex3(), expectedVertex3);
+	BOOST_CHECK_EQUAL(triangle.GetOutlineColor(), expectedOutlineColor);
+	BOOST_CHECK_EQUAL(triangle.GetFillColor(), expectedFillColor);
+}

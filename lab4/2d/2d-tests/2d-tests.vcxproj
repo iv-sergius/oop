@@ -155,8 +155,10 @@
   <ItemGroup>
     <ClInclude Include="..\Circle.h" />
     <ClInclude Include="..\Line.h" />
+    <ClInclude Include="..\Rectangle.h" />
     <ClInclude Include="..\Shape.h" />
     <ClInclude Include="..\SolidShape.h" />
+    <ClInclude Include="..\Triangle.h" />
     <ClInclude Include="2d-tests.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -166,13 +168,16 @@
     <ClCompile Include="..\Circle.cpp" />
     <ClCompile Include="..\Line.cpp" />
     <ClCompile Include="..\Point.cpp" />
+    <ClCompile Include="..\Rectangle.cpp" />
     <ClCompile Include="..\Shape.cpp" />
     <ClCompile Include="..\SolidShape.cpp" />
+    <ClCompile Include="..\Triangle.cpp" />
     <ClCompile Include="2d-tests.cpp" />
     <ClCompile Include="Circle-tests.cpp" />
     <ClCompile Include="Line-tests.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Point-tests.cpp" />
+    <ClCompile Include="Rectange-tests.cpp" />
     <ClCompile Include="Shape-tests.cpp" />
     <ClCompile Include="SolidShape-tests.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -181,6 +186,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Triangle-tests.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

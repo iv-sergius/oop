@@ -2,14 +2,21 @@
 #include "SolidShape.h"
 #include "Point.h"
 
-class CRectangle : public ISolidShape
+class CRectangle : public CSolidShape
 {
 public:
+	CRectangle(const CPoint &leftTop, const CPoint &rightBottom, const std::string &outlineColor, const std::string &fillColor);
+
+	double GetArea() const;
+	double GetPerimeter() const;
+	std::string ToString() const;
+
+
 	CPoint GetLeftTop() const;
 	CPoint GetRightBottom() const;
-	CPoint GetWidth() const;
-	CPoint GetHeight() const;
+	double GetWidth() const;
+	double GetHeight() const;
 private:
-	CPoint m_leftTopVertex;
-	CPoint m_size;
+	CPoint m_leftTop;
+	CPoint m_rightBottom;
 };
