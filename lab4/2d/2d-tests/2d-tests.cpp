@@ -20,9 +20,17 @@ void VerifyPoint(const CPoint &point, const CPoint &expectedPoint)
 	VerifyDouble(point.y, expectedPoint.y);
 }
 
-void VerifyLineSegment(const CLineSegment &line, const CPoint &expectedStart, const CPoint &expectedEnd, const std::string &expectedColor)
+void VerifyLineSegment(const CLineSegment &line, const CPoint &expectedStart, const CPoint &expectedEnd, const std::string &expectedOutlineColor)
 {
 	VerifyPoint(line.GetStartPoint(), expectedStart);
 	VerifyPoint(line.GetEndPoint(), expectedEnd);
-	BOOST_CHECK_EQUAL(line.GetOutlineColor(), expectedColor);
+	BOOST_CHECK_EQUAL(line.GetOutlineColor(), expectedOutlineColor);
+}
+
+void VerifyCircle(const CCircle &circle, const CPoint &expectedCenter, double expectedRadius, const std::string &expectedOutlineColor, const std::string &expectedFillColor)
+{
+	VerifyPoint(circle.GetCenter(), expectedCenter);
+	VerifyDouble(circle.GetRadius(), expectedRadius);
+	BOOST_CHECK_EQUAL(circle.GetOutlineColor(), expectedOutlineColor);
+	BOOST_CHECK_EQUAL(circle.GetFillColor(), expectedFillColor);
 }

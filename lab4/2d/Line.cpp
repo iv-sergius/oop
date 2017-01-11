@@ -2,10 +2,10 @@
 #include "Line.h"
 
 CLineSegment::CLineSegment(const CPoint & point1, const CPoint & point2, const std::string & outlineColor)
-	: m_vertex1(point1)
+	: CShape("LineSegment", outlineColor)
+	, m_vertex1(point1)
 	, m_vertex2(point2)
 {
-	SetOutlineColor(outlineColor);
 }
 
 CPoint CLineSegment::GetStartPoint() const

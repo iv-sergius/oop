@@ -3,7 +3,7 @@
 #include "Shape.h"
 #include "Point.h"
 
-class CLineSegment : public IShape
+class CLineSegment : public CShape
 {
 public:
 	CLineSegment(const CPoint &point1, const CPoint &point2, const std::string &outlineColor);

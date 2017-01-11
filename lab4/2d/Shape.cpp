@@ -1,35 +1,40 @@
 #include "stdafx.h"
 #include "Shape.h"
 
-
-
-std::string IShape::GetOutlineColor() const
+std::string CShape::GetOutlineColor() const
 {
 	return m_outlineColor;
 }
 
-void IShape::SetOutlineColor(const std::string & stringColor)
+std::string NormalizeColor(const std::string & stringColor)
 {
 	if (stringColor.length() != 6)
 	{
 		throw std::invalid_argument("Color must be string with length = 6");
 	}
-	std::string colorToSave;
+	std::string normalColor;
 	for (size_t i = 0; i < stringColor.length(); ++i)
 	{
 		char ch = stringColor[i];
 		if (isdigit(ch) || (ch >= 'a' && ch <= 'f'))
 		{
-			colorToSave.push_back(ch);
+			normalColor.push_back(ch);
 		}
 		else if (ch >= 'A' && ch <= 'F')
 		{
-			colorToSave.push_back(ch - 'A' + 'a');
+			normalColor.push_back(ch - 'A' + 'a');
 		}
 		else
 		{
 			throw std::invalid_argument("Color string must contain only hex symbols");
 		}
 	}
-	m_outlineColor = colorToSave;
+	return normalColor;
+}
+
+CShape::CShape(const std::string & typeName, const std::string & outlineColor)
+	: m_typeName(typeName)
+	, m_outlineColor(NormalizeColor(outlineColor))
+{
+
 }
