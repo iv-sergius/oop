@@ -110,14 +110,11 @@ BOOST_AUTO_TEST_SUITE(Solve_4_degree)
 	BOOST_AUTO_TEST_SUITE(return_a)
 		BOOST_AUTO_TEST_CASE(empty_solution)
 		{
-			EquationRoot4 answer;
 			std::vector<double> coef = {1, 0, 0, 0, 1};
-			answer = Solve4(coef[0], coef[1], coef[2], coef[3], coef[4]);
-			BOOST_CHECK_EQUAL(answer.numRoots, 0);
+			BOOST_REQUIRE_THROW(Solve4(coef[0], coef[1], coef[2], coef[3], coef[4]), std::domain_error);
 			coef ={ -10, 7, -5, 0, -1};
-			answer = Solve4(coef[0], coef[1], coef[2], coef[3], coef[4]);
-			BOOST_CHECK_EQUAL(answer.numRoots, 0);
-		}
+			BOOST_REQUIRE_THROW(Solve4(coef[0], coef[1], coef[2], coef[3], coef[4]), std::domain_error);
+	}
 		BOOST_AUTO_TEST_CASE(solution_with_1_root)
 		{
 			EquationRoot4 answer;

@@ -105,6 +105,10 @@ EquationRoot4 Solve4(double a, double b, double c, double d, double e)
 		subSolution = Solve2(1., A / 2. - alpha, y0 / 2. - beta);
 		AddRootsToEquation(answer, subSolution);
 	}
+	if (answer.numRoots == 0)
+	{
+		throw(std::domain_error("No any root"));
+	}
 	return answer;
 }
 
@@ -149,4 +153,13 @@ double Root3(double a, double b, double c, double d)
 	}
 	double x = y - b / 3.;
 	return x;
+}
+
+void PrintEquationRoot4(std::ostream &outStream, const EquationRoot4 & roots4Degree)
+{
+	outStream << std::fixed << std::setprecision(3) << "Equation have " << roots4Degree.numRoots << " root(s)"<< std::endl;
+	for (size_t i = 0; i < roots4Degree.numRoots; ++i)
+	{
+		outStream << "\troot #" << i << " = " << roots4Degree.roots[i] << std::endl;
+	}
 }

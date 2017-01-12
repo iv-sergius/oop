@@ -20,3 +20,5 @@ EquationRoot4 Solve4(double a, double b, double c, double d, double e);
 
 // find one of roots of 3rd derge equations
 double Root3(double a, double b, double c, double d);
+
+void PrintEquationRoot4(std::ostream &outStream, const EquationRoot4 & roots4Degree);

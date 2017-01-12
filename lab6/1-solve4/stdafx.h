@@ -8,6 +8,8 @@
 #include "targetver.h"
 
 #include <iostream>
+#include <iomanip>
+#include <algorithm>
 #include <exception>
 #define _USE_MATH_DEFINES
 #include <math.h>
