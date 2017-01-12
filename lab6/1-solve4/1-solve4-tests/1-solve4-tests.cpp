@@ -2,20 +2,21 @@
 #include <boost\test\unit_test.hpp>
 #include "../1-solve4.h"
 
+static const double R_EPS = 1e-12;
+
+void VerifyRoot(const double root, const double functionValue)
+{
+	BOOST_CHECK_SMALL(functionValue, R_EPS);
+}
+
 void CheckSolve2(EquationRoot2 solution, const std::vector<double> &coef)
 {
 	for (size_t i = 0; i < solution.numRoots; ++i)
 	{
 		double x = solution.roots[i];
 		BOOST_CHECK_EQUAL(coef.size(), 3);
-		if (abs(x) > 1)
-		{
-			BOOST_CHECK_SMALL(abs((coef[0] * x + coef[1]) * x + coef[2]), 3. * abs(x) * DBL_EPSILON );
-		}
-		else
-		{
-			BOOST_CHECK_SMALL(abs((coef[0] * x + coef[1]) * x + coef[2]), 3. * DBL_EPSILON);
-		}
+		double y = (coef[0] * x + coef[1]) * x + coef[2];
+		VerifyRoot(x, y);
 	}
 }
 
@@ -35,7 +36,7 @@ BOOST_AUTO_TEST_SUITE(Solve_2_degree)
 			answer = Solve2(coef[0], coef[1], coef[2]);
 			BOOST_CHECK_EQUAL(answer.numRoots, 0);
 		}
-		BOOST_AUTO_TEST_CASE(empty_solution_if_discriminant_equal_0)
+		BOOST_AUTO_TEST_CASE(one_solution_if_discriminant_equal_0)
 		{
 			EquationRoot2 answer;
 			std::vector<double> coef = { 1, 0, 0 };
@@ -47,7 +48,7 @@ BOOST_AUTO_TEST_SUITE(Solve_2_degree)
 			BOOST_CHECK_EQUAL(answer.numRoots, 1);
 			CheckSolve2(answer, coef);
 		}
-		BOOST_AUTO_TEST_CASE(empty_solution_if_discriminant_is_positive)
+		BOOST_AUTO_TEST_CASE(two_solution_if_discriminant_is_positive)
 		{
 			EquationRoot2 answer;
 			std::vector<double> coef = { 1, 5, 1 };
@@ -64,6 +65,8 @@ BOOST_AUTO_TEST_SUITE_END()
 
 void CheckRoot3(double root, const std::vector<double> &coef)
 {
+	double y = ((coef[0] * root + coef[1]) * root + coef[2]) * root + coef[3];
+	VerifyRoot(root, y);
 }
 
 BOOST_AUTO_TEST_SUITE(Root_3_degree)
@@ -95,14 +98,8 @@ void CheckSolve4(EquationRoot4 solution, const std::vector<double> &coef)
 	{
 		double x = solution.roots[i];
 		BOOST_CHECK_EQUAL(coef.size(), 5);
-		if (abs(x) > 1)
-		{
-			BOOST_CHECK_SMALL(abs((((coef[0] * x + coef[1]) * x + coef[2]) * x + coef[3]) * x + coef[4]), 5. * abs(x) * DBL_EPSILON);
-		}
-		else
-		{
-			BOOST_CHECK_SMALL(abs((((coef[0] * x + coef[1]) * x + coef[2]) * x + coef[3]) * x + coef[4]), 5. * DBL_EPSILON);
-		}
+		double y = (((coef[0] * x + coef[1]) * x + coef[2]) * x + coef[3]) * x + coef[4];
+		VerifyRoot(x, y);
 	}
 }
 BOOST_AUTO_TEST_SUITE(Solve_4_degree)
@@ -128,19 +125,45 @@ BOOST_AUTO_TEST_SUITE(Solve_4_degree)
 			answer = Solve4(coef[0], coef[1], coef[2], coef[3], coef[4]);
 			BOOST_CHECK_EQUAL(answer.numRoots, 1);
 			CheckSolve4(answer, coef);
-			BOOST_CHECK_EQUAL(answer.roots[0], 0);
+			BOOST_CHECK_EQUAL(answer.roots[0], 0.);
 
-			coef = { 1, -4, 6, -4, 1 };
+			coef = { 16, -32, 24, -8, 1 };
 			answer = Solve4(coef[0], coef[1], coef[2], coef[3], coef[4]);
 			BOOST_CHECK_EQUAL(answer.numRoots, 1);
 			CheckSolve4(answer, coef);
-			BOOST_CHECK_EQUAL(answer.roots[0], 1);
+			BOOST_CHECK_EQUAL(answer.roots[0], 0.5);
 		}
 		BOOST_AUTO_TEST_CASE(solution_with_2_roots)
 		{
+			EquationRoot4 answer;
+			std::vector<double> coef = { 1, 0, -2, 0, 1 };
+			answer = Solve4(coef[0], coef[1], coef[2], coef[3], coef[4]);
+			BOOST_CHECK_EQUAL(answer.numRoots, 2);
+			CheckSolve4(answer, coef);
+			
+			coef = { 1, 1, 0, 0, 0 };
+			answer = Solve4(coef[0], coef[1], coef[2], coef[3], coef[4]);
+			BOOST_CHECK_EQUAL(answer.numRoots, 2);
+			CheckSolve4(answer, coef);
+			
+			coef = { 4, -12, 13, -6, 1 };
+			answer = Solve4(coef[0], coef[1], coef[2], coef[3], coef[4]);
+			BOOST_CHECK_EQUAL(answer.numRoots, 2);
+			CheckSolve4(answer, coef);
 		}
 		BOOST_AUTO_TEST_CASE(solution_with_3_roots)
 		{
+			EquationRoot4 answer;
+			std::vector<double> coef = { 2, -3, 1, 0, 0 };
+			answer = Solve4(coef[0], coef[1], coef[2], coef[3], coef[4]);
+			BOOST_CHECK_EQUAL(answer.numRoots, 3);
+			CheckSolve4(answer, coef);
+			
+			coef = { 2, -9, 14, -9, 2 };
+			answer = Solve4(coef[0], coef[1], coef[2], coef[3], coef[4]);
+			BOOST_CHECK_EQUAL(answer.numRoots, 3);
+			CheckSolve4(answer, coef);
+			
 		}
 		BOOST_AUTO_TEST_CASE(solution_with_4_roots)
 		{
@@ -149,6 +172,12 @@ BOOST_AUTO_TEST_SUITE(Solve_4_degree)
 			answer = Solve4(coef[0], coef[1], coef[2], coef[3], coef[4]);
 			BOOST_CHECK_EQUAL(answer.numRoots, 4);
 			CheckSolve4(answer, coef);
+			
+			coef = { 4, -12, 7, 3, -2 };
+			answer = Solve4(coef[0], coef[1], coef[2], coef[3], coef[4]);
+			BOOST_CHECK_EQUAL(answer.numRoots, 4);
+			CheckSolve4(answer, coef);
+			
 		}
 	BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE_END()

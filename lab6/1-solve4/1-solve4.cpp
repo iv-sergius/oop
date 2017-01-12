@@ -11,7 +11,7 @@ EquationRoot2 Solve2(double a, double b, double c)
 	}
 	EquationRoot2 solution;
 	double D = b * b - 4. * a * c;
-	if (abs(D) < DBL_EPSILON) // 1 root
+	if (abs(D) < 100. * DBL_EPSILON) // 1 root
 	{
 		solution.numRoots = 1;
 		solution.roots[0] = -b / a / 2.;
@@ -47,15 +47,21 @@ EquationRoot2 Solve2(double a, double b, double c)
 
 void AddRootsToEquation(EquationRoot4 &solution4, const EquationRoot2 &solution2)
 {
-	if (solution4.numRoots + solution2.numRoots > 4)
-	{
-		throw std::invalid_argument("No place to add root");
-	}
+	size_t numRoots = solution4.numRoots;
 	for (size_t i = 0; i < solution2.numRoots; ++i)
 	{
-		solution4.roots[solution4.numRoots + i] = solution2.roots[i];
+		bool isNewRoot = true;
+		for (size_t j = 0; (j < numRoots) && isNewRoot; ++j)
+		{
+			isNewRoot = abs(solution4.roots[j] - solution2.roots[i]) > DBL_EPSILON;
+		}
+		if (isNewRoot)
+		{
+			solution4.roots[numRoots] = solution2.roots[i];
+			++numRoots;
+		}
 	}
-	solution4.numRoots += solution2.numRoots;
+	solution4.numRoots = numRoots;
 }
 
 EquationRoot4 Solve4(double a, double b, double c, double d, double e)
@@ -72,16 +78,33 @@ EquationRoot4 Solve4(double a, double b, double c, double d, double e)
 	double C = d / a;
 	double D = e / a;
 
-	double y0 = Root3(1., -B, A * C - 4. * D, 4. * B * D - A * A * D - C * C);
-	double alpha = sqrt(A * A / 4. - B + y0);
-	double beta = ((A / 2) * y0 - C) / alpha/ 2.;
-//	assert(	abs(beta) - sqrt(y0 * y0 / 4. - D) < 2 * std::max(1., abs(y0)) * DBL_EPSILON );
+	double y0, alpha, beta;
+	y0 = Root3(1., -B, A * C - 4. * D, 4. * B * D - A * A * D - C * C);
+	alpha = sqrt(A * A / 4. - B + y0);
+	if (abs(alpha) < DBL_EPSILON) // if alpha = 0
+	{
+		beta = sqrt(y0 * y0 / 4. - D);
+	}
+	else
+	{
+		beta = ((A / 2) * y0 - C) / alpha/ 2.;
+	}
+	assert(	abs(beta) - sqrt(y0 * y0 / 4. - D) < 2 * std::max(1., abs(y0)) * DBL_EPSILON );
 	
-	EquationRoot2 subSolution;
-	subSolution = Solve2(1., A / 2. + alpha, y0 / 2. + beta);
-	AddRootsToEquation(answer, subSolution);
-	subSolution = Solve2(1., A / 2. - alpha, y0 / 2. - beta);
-	AddRootsToEquation(answer, subSolution);
+	if (abs(alpha) + abs(beta) < 2. * DBL_EPSILON)
+	{
+		EquationRoot2 subSolution;
+		subSolution = Solve2(1., A / 2., y0 / 2.);
+		AddRootsToEquation(answer, subSolution);
+	}
+	else
+	{
+		EquationRoot2 subSolution;
+		subSolution = Solve2(1., A / 2. + alpha, y0 / 2. + beta);
+		AddRootsToEquation(answer, subSolution);
+		subSolution = Solve2(1., A / 2. - alpha, y0 / 2. - beta);
+		AddRootsToEquation(answer, subSolution);
+	}
 	return answer;
 }
 
@@ -101,9 +124,11 @@ double Root3(double a, double b, double c, double d)
 	double p = c - b * b / 3.;
 	double q = d + b * b * b * 2. / 27 - b * c / 3.;
 
-	double Q = pow(q / 2., 2) + pow(p / 3., 3);
+	double Q = q * q / 4. + p * p * p / 27.;
+	//double Q = pow(q / 2., 2) + pow(p / 3., 3);
 	double y, z;
-	if (abs(Q) < DBL_EPSILON) 
+	if (abs(q) + abs(p) < 2. * DBL_EPSILON) // Q == 0 
+	//if (abs(Q) < DBL_EPSILON)
 	{
 		y = 0.;
 	}
