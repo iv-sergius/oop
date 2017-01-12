@@ -48,6 +48,9 @@
     <ClInclude Include="..\Triangle.h">
       <Filter>testing code</Filter>
     </ClInclude>
+    <ClInclude Include="..\Point.h">
+      <Filter>testing code</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -92,9 +95,6 @@
     <ClCompile Include="SolidShape-tests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Rectange-tests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Rectangle.cpp">
       <Filter>testing code</Filter>
     </ClCompile>
@@ -103,6 +103,9 @@
     </ClCompile>
     <ClCompile Include="..\Triangle.cpp">
       <Filter>testing code</Filter>
+    </ClCompile>
+    <ClCompile Include="Rectangle-tests.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

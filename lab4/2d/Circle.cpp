@@ -25,11 +25,6 @@ double CCircle::GetPerimeter() const
 	return 2. * m_radius * M_PI;
 }
 
-std::string CCircle::ToString() const
-{
-	return std::string();
-}
-
 CPoint CCircle::GetCenter() const
 {
 	return m_center;
@@ -38,4 +33,11 @@ CPoint CCircle::GetCenter() const
 double CCircle::GetRadius() const
 {
 	return m_radius;
+}
+
+void CCircle::AppendProperties(std::ostream & strm) const
+{
+	strm << "\tcenter point = " << m_center.ToString() << std::endl
+		<< "\tradius = " << m_radius << std::endl;
+	CSolidShape::AppendProperties(strm);
 }

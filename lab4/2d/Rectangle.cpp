@@ -25,11 +25,6 @@ double CRectangle::GetPerimeter() const
 	return 2. * (GetWidth() + GetHeight());
 }
 
-std::string CRectangle::ToString() const
-{
-	return std::string();
-}
-
 CPoint CRectangle::GetLeftTop() const
 {
 	return m_leftTop;
@@ -48,4 +43,11 @@ double CRectangle::GetWidth() const
 double CRectangle::GetHeight() const
 {
 	return m_rightBottom.y - m_leftTop.y;
+}
+
+void CRectangle::AppendProperties(std::ostream & strm) const
+{
+	strm << "\tleft top point = " << m_leftTop.ToString() << std::endl
+		<< "\tright bottom point = " << m_rightBottom.ToString() << std::endl;
+	CSolidShape::AppendProperties(strm);
 }

@@ -38,3 +38,14 @@ CShape::CShape(const std::string & typeName, const std::string & outlineColor)
 {
 
 }
+
+std::string CShape::ToString() const
+{
+	std::ostringstream strm;
+	strm << m_typeName << ":" << std::endl << std::fixed << std::setprecision(3);
+	AppendProperties(strm);
+	strm << "\toutline color = #" << GetOutlineColor() << std::endl
+		<< "\tarea = " << GetArea() << std::endl
+		<< "\tperimeter = " << GetPerimeter() << std::endl;
+	return strm.str();
+}

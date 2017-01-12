@@ -12,10 +12,11 @@ public:
 	
 	double GetArea() const;
 	double GetPerimeter() const;
-	std::string ToString() const;
 
 	CPoint GetCenter() const;
 	double GetRadius() const;
+protected:
+	void AppendProperties(std::ostream & strm) const;
 private:
 	CPoint m_center;
 	double m_radius;

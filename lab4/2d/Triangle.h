@@ -9,11 +9,12 @@ public:
 
 	double GetArea() const;
 	double GetPerimeter() const;
-	std::string ToString() const;
 
 	CPoint GetVertex1() const;
 	CPoint GetVertex2() const;
 	CPoint GetVertex3() const;
+protected:
+	void CTriangle::AppendProperties(std::ostream & strm) const;
 private:
 	CPoint m_vertex1;
 	CPoint m_vertex2;

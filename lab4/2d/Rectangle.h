@@ -9,13 +9,13 @@ public:
 
 	double GetArea() const;
 	double GetPerimeter() const;
-	std::string ToString() const;
-
 
 	CPoint GetLeftTop() const;
 	CPoint GetRightBottom() const;
 	double GetWidth() const;
 	double GetHeight() const;
+protected:
+	void CRectangle::AppendProperties(std::ostream & strm) const;
 private:
 	CPoint m_leftTop;
 	CPoint m_rightBottom;

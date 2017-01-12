@@ -20,6 +20,19 @@ BOOST_AUTO_TEST_SUITE(Point_class_constructor)
 		BOOST_REQUIRE_CLOSE(point.x, 1., R_EPS);
 		BOOST_REQUIRE_CLOSE(point.y, 2., R_EPS);
 	}
+	BOOST_AUTO_TEST_SUITE(ToString)
+		BOOST_AUTO_TEST_CASE(return_right_value)
+		{
+			CPoint point(1, -2);
+			BOOST_CHECK_EQUAL(point.ToString(), "(1.000, -2.000)");
+		}
+		BOOST_AUTO_TEST_CASE(removes_extra_digits_after_tht_point)
+		{
+			CPoint point(0.123456, -9.876543210);
+			BOOST_CHECK_EQUAL(point.ToString(), "(0.123, -9.877)");
+		}
+
+	BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_AUTO_TEST_SUITE(abs_function)

@@ -30,14 +30,20 @@ BOOST_AUTO_TEST_SUITE(LineSegment)
 			VerifyDouble(line.GetPerimeter(), 5.);
 		}
 	BOOST_AUTO_TEST_SUITE_END()
-/*	BOOST_AUTO_TEST_SUITE(ToString)
+	BOOST_AUTO_TEST_SUITE(ToString)
 		BOOST_AUTO_TEST_CASE(return_right_value)
 		{
 			CPoint point1 = { 1, 2 }, point2 = { -3, 5 };
 			CLineSegment line(point1, point2, "ff00ff");
-			BOOST_CHECK_EQUAL(line.ToString(), "LineSegment  1.000 2.000  -3.000 5.000  ff00ff");
+			std::string expectedString = std::string("LineSegment:\n")
+				+ "\tstart point = (1.000, 2.000)\n"
+				+ "\tend point = (-3.000, 5.000)\n"
+				+ "\toutline color = #ff00ff\n"
+				+ "\tarea = 0.000\n"
+				+ "\tperimeter = 5.000\n";
+			BOOST_CHECK_EQUAL(line.ToString(), expectedString);
 		}
-	BOOST_AUTO_TEST_SUITE_END()*/
+	BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_AUTO_TEST_SUITE_END()
 

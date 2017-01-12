@@ -6,6 +6,14 @@ CPoint::CPoint(double x, double y)
 {
 }
 
+std::string CPoint::ToString() const
+{
+	std::ostringstream strm;
+	strm << std::fixed << std::setprecision(3)
+		<< '(' << x << ", " << y << ')';
+	return strm.str();
+}
+
 double abs(const CPoint &p)
 {
 	return sqrt(p.x * p.x + p.y * p.y);

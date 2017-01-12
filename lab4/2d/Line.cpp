@@ -28,15 +28,9 @@ double CLineSegment::GetArea() const
 	return 0.;
 }
 
-std::string CLineSegment::ToString() const
+void CLineSegment::AppendProperties(std::ostream & strm) const
 {
-	std::ostringstream lineString;
-	lineString << std::fixed << std::setprecision(3);
-	lineString << "LineSegment  "
-		<< m_vertex1.x << " "
-		<< m_vertex1.y << "  "
-		<< m_vertex2.x << " "
-		<< m_vertex2.y << "  "
-		<< GetOutlineColor();
-	return lineString.str();
+	strm << "\tstart point = " << m_vertex1.ToString() << std::endl
+		<< "\tend point = " << m_vertex2.ToString() <<std::endl;
 }
+

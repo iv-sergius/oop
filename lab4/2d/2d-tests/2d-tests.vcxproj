@@ -155,6 +155,7 @@
   <ItemGroup>
     <ClInclude Include="..\Circle.h" />
     <ClInclude Include="..\Line.h" />
+    <ClInclude Include="..\Point.h" />
     <ClInclude Include="..\Rectangle.h" />
     <ClInclude Include="..\Shape.h" />
     <ClInclude Include="..\SolidShape.h" />
@@ -177,7 +178,7 @@
     <ClCompile Include="Line-tests.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Point-tests.cpp" />
-    <ClCompile Include="Rectange-tests.cpp" />
+    <ClCompile Include="Rectangle-tests.cpp" />
     <ClCompile Include="Shape-tests.cpp" />
     <ClCompile Include="SolidShape-tests.cpp" />
     <ClCompile Include="stdafx.cpp">

@@ -37,18 +37,22 @@ BOOST_AUTO_TEST_SUITE(Circle)
 			VerifyDouble(circle.GetPerimeter(), M_PI * 10.);
 		}
 	BOOST_AUTO_TEST_SUITE_END()
-/*
 	BOOST_AUTO_TEST_SUITE(ToString)
 		BOOST_AUTO_TEST_CASE(return_right_value)
 		{
 			CPoint center(1., -2.);
 			CCircle circle = { center, 5., "123456", "ff00ff" };
-			BOOST_CHECK_EQUAL(circle.ToString(), "Circle  1.000 -2.000  5.000  123456 ff00ff");
+			std::string expectedString = std::string("Circle:\n")
+				+ "\tcenter point = (1.000, -2.000)\n"
+				+ "\tradius = 5.000\n"
+				+ "\tfill color = #ff00ff\n"
+				+ "\toutline color = #123456\n"
+				+ "\tarea = 78.540\n"
+				+ "\tperimeter = 31.416\n";
+			BOOST_CHECK_EQUAL(circle.ToString(), expectedString);
 		}
 	BOOST_AUTO_TEST_SUITE_END()
-*/
 BOOST_AUTO_TEST_SUITE_END()
-
 
 /*
 BOOST_AUTO_TEST_SUITE()

@@ -16,3 +16,13 @@ std::string CSolidShape::GetOutlineColor() const
 {
 	return CShape::GetOutlineColor();
 }
+
+std::string CSolidShape::ToString() const
+{
+	return CShape::ToString();
+}
+
+void CSolidShape::AppendProperties(std::ostream & strm) const
+{
+	strm << "\tfill color = #" << GetFillColor() << std::endl;
+}
