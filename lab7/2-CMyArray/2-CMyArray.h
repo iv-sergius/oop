@@ -15,16 +15,8 @@ public:
 		if (size != 0)
 		{
 			m_begin = RawAlloc(size);
-			try
-			{
-				CopyItems(arr.m_begin, arr.m_end, m_begin, m_end);
-				m_endOfCapacity = m_end;
-			}
-			catch (...)
-			{
-				DeleteItems(m_begin, m_end);
-				throw;
-			}
+			CopyItems(arr.m_begin, arr.m_end, m_begin, m_end);
+			m_endOfCapacity = m_end;
 		}
 	}
 
@@ -36,18 +28,10 @@ public:
 
 			auto newBegin = RawAlloc(newCapacity);
 			T *newEnd = newBegin;
-			try
-			{
-				CopyItems(m_begin, m_end, newBegin, newEnd);
-				// Конструируем копию value по адресу newItemLocation
-				new (newEnd)T(value);
-				++newEnd;
-			}
-			catch (...)
-			{
-				DeleteItems(newBegin, newEnd);
-				throw;
-			}
+			CopyItems(m_begin, m_end, newBegin, newEnd);
+			// Конструируем копию value по адресу newItemLocation
+			new (newEnd)T(value);
+			++newEnd;
 			DeleteItems(m_begin, m_end);
 
 			// Переключаемся на использование нового хранилища элементов
@@ -83,6 +67,44 @@ public:
 	{
 		return m_endOfCapacity - m_begin;
 	}
+
+	T& operator[](size_t index)
+	{
+		if (index >= GetSize())
+		{
+			throw std::out_of_range("Index out of range");
+		}
+		return m_begin[index];
+	}
+
+	void Resize(size_t newSize)
+	{
+		if (newSize > GetCapacity())
+		{
+			auto newBegin = RawAlloc(newSize);
+			T *transitEnd = newBegin;
+			CopyItems(m_begin, m_end, newBegin, transitEnd);
+			T *newEnd = newBegin + newSize;
+			FillDefaultItems(transitEnd, newEnd);
+			// switch to new place
+			DeleteItems(m_begin, m_end);
+			m_begin = newBegin;
+			m_end = newEnd;
+		} 
+		else if (newSize >= GetSize())
+		{
+			T *newEnd = m_begin + newSize;
+			FillDefaultItems(m_end, newEnd); 
+			m_end = newEnd;
+		}
+		else if (newSize < GetSize()) // destroy excess elements
+		{
+			T *newEnd = m_begin + newSize;
+			DestroyItems(newEnd, m_end);
+			m_end = newEnd;
+		}
+	}
+
 	~CMyArray()
 	{
 		DeleteItems(m_begin, m_end);
@@ -99,16 +121,41 @@ private:
 	// Копирует элементы из текущего вектора в to, возвращает newEnd
 	static void CopyItems(const T *srcBegin, T *srcEnd, T * const dstBegin, T * & dstEnd)
 	{
-		for (dstEnd = dstBegin; srcBegin != srcEnd; ++srcBegin, ++dstEnd)
+		try
 		{
-			// Construct "T" at "dstEnd" as a copy of "*begin"
-			new (dstEnd)T(*srcBegin);
+			for (dstEnd = dstBegin; srcBegin != srcEnd; ++srcBegin, ++dstEnd)
+			{
+				// Construct "T" at "dstEnd" as a copy of "*begin"
+				new (dstEnd)T(*srcBegin);
+			}
+		}
+		catch (...)
+		{
+			DeleteItems(dstBegin, dstEnd);
+			throw;
+		}
+	}
+
+	static void FillDefaultItems(T *from, T *to)
+	{
+		T *copyItemPtr;
+		try 
+		{
+			for (copyItemPtr = from; copyItemPtr < to; ++copyItemPtr) //or   from != to 
+			{
+				new (copyItemPtr)T(); // безопасен ли констуктор по умолчанию к исключениям??
+			}
+		}
+		catch (...)
+		{
+			DeleteItems(from, copyItemPtr);
+			throw;
 		}
 	}
 
 	static void DestroyItems(T *from, T *to)
 	{
-		// dst - адрес объект, при конструирование которого было выброшено исключение
+		// from - адрес объекта, при конструирование которого было выброшено исключение
 		// to - первый скорнструированный объект
 		while (to != from)
 		{
