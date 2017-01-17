@@ -108,7 +108,7 @@ void PrintMaxAreaShape(const TypeShapePtrVector &shapesVector)
 	if (!shapesVector.empty())
 	{
 		auto minShapePtr = std::max_element(shapesVector.begin(), shapesVector.end(), [](const auto &lhs, const auto &rhs){
-			return lhs->GetArea() > rhs->GetArea();
+			return lhs->GetArea() < rhs->GetArea();
 		});
 		std::cout << "Maximun area shape is " << (*minShapePtr)->ToString() << std::endl;
 	}
@@ -119,7 +119,7 @@ void PrintMinPerimeterShape(const TypeShapePtrVector &shapesVector)
 	if (!shapesVector.empty())
 	{
 		auto minShapePtr = std::min_element(shapesVector.begin(), shapesVector.end(), [](const auto &lhs, const auto &rhs) {
-			return lhs->GetPerimeter() > rhs->GetPerimeter();
+			return lhs->GetPerimeter() < rhs->GetPerimeter();
 		});
 		std::cout << "Minimum perimeter shape is " << (*minShapePtr)->ToString() << std::endl;
 	}
@@ -128,5 +128,9 @@ void PrintMinPerimeterShape(const TypeShapePtrVector &shapesVector)
 void PrintShape(const TypeShapePtrVector &shapesVector)
 {
 	for (auto it = shapesVector.begin(); it != shapesVector.end(); ++it)
-		std::cout << (*it).get()->ToString();
+	{
+		auto tmp = *it;
+		std::cout << (tmp)->ToString();
+
+	}
 }
