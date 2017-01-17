@@ -4,7 +4,8 @@
 class IShape
 {
 public:
-	virtual ~IShape() {};
+	IShape() = default;
+	virtual ~IShape() = default;
 	virtual double GetArea() const = 0;
 	virtual double GetPerimeter() const = 0;
 	virtual std::string ToString() const = 0;
@@ -14,12 +15,13 @@ protected:
 private:
 };
 
-class CShape : public IShape
+class CShape : virtual public IShape
 {
 public:
 	CShape(const std::string & typeName, const std::string & outlineColor);
-	std::string ToString() const;
-	std::string GetOutlineColor() const;
+	virtual ~CShape() = default;
+	std::string ToString() const override;
+	std::string GetOutlineColor() const override;
 protected:
 private:
 	std::string m_outlineColor = "00000";

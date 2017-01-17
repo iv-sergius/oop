@@ -10,9 +10,11 @@
 #include <stdio.h>
 #include <tchar.h>
 #include <string>
+#include <iostream>
 #include <sstream>
 #include <iomanip>
-//#include <initializer_list>
-
-
-// TODO: reference additional headers your program requires here
+#include <memory>
+#include <vector>
+#include <map>
+#include <functional>
+#include <boost\algorithm\string.hpp>
