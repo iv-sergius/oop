@@ -73,7 +73,7 @@ BOOST_FIXTURE_TEST_SUITE(MyArray, EmptyArray)
 	{
 		with_some_elements_()
 		{
-			for (auto i = 0; i < 6; ++i)
+			for (auto i = 0; i < 5; ++i)
 			{
 				arr.Append(i * i);
 			}
@@ -84,8 +84,8 @@ BOOST_FIXTURE_TEST_SUITE(MyArray, EmptyArray)
 			BOOST_AUTO_TEST_CASE(get_access_to_element)
 			{
 				BOOST_CHECK_EQUAL(arr[0].value, 0);
-				BOOST_CHECK_EQUAL(arr[3].value, 9);
-				BOOST_CHECK_EQUAL(arr[5].value, 25);
+				BOOST_CHECK_EQUAL(arr[2].value, 4);
+				BOOST_CHECK_EQUAL(arr[4].value, 16);
 			}
 			BOOST_AUTO_TEST_CASE(throw_on_invalid_index)
 			{
@@ -94,27 +94,69 @@ BOOST_FIXTURE_TEST_SUITE(MyArray, EmptyArray)
 			}
 		BOOST_AUTO_TEST_SUITE_END()
 		BOOST_AUTO_TEST_SUITE(Resize_function)
-			BOOST_AUTO_TEST_CASE(new_elements_have_default_value)
-			{
-				size_t oldSize = arr.GetSize();
-				arr.Resize(oldSize + 2);
-				BOOST_CHECK_EQUAL(arr.GetSize(), oldSize + 2);
-				BOOST_CHECK_EQUAL(arr[oldSize].value, ArrayItem().value);
-				BOOST_CHECK_EQUAL(arr[oldSize + 1].value, ArrayItem().value);
-				size_t newSize = 2 * oldSize + 1;
-				arr.Resize(newSize);
-				BOOST_CHECK_EQUAL(arr.GetSize(), newSize);
-				BOOST_CHECK_EQUAL(arr[newSize - 1].value, ArrayItem().value);
-			}
+			BOOST_AUTO_TEST_SUITE(when_increase_size_fill_new_elements_with_default_value)
+				BOOST_AUTO_TEST_CASE(and_do_not_change_capacity_if_it_does_not_need)
+				{
+					size_t oldSize = arr.GetSize();
+					auto lastValue = arr.GetBack().value;
+					size_t oldCapacity = arr.GetCapacity();
+					BOOST_CHECK(oldCapacity - oldSize > 2);
+					size_t newSize = oldCapacity - 1; // oldSize < newSize < oldCapacity
+					arr.Resize(newSize);
+					BOOST_CHECK_EQUAL(arr.GetSize(), newSize);
+					BOOST_CHECK_EQUAL(arr.GetCapacity(), oldCapacity);
+					// check data
+					BOOST_CHECK_EQUAL(arr[oldSize - 1].value, lastValue);
+					BOOST_CHECK_EQUAL(arr[oldSize].value, ArrayItem().value);
+					BOOST_CHECK_EQUAL(arr.GetBack().value, ArrayItem().value);
+				}
+				BOOST_AUTO_TEST_CASE(and_can_increase_capacity)
+				{
+					auto lastValue = arr.GetBack().value;
+					size_t oldSize = arr.GetSize();
+					size_t oldCapacity = arr.GetCapacity();
+					size_t newSize = 2 * oldSize + 1; // oldSize < newSize < oldCapacity
+					arr.Resize(newSize);
+					BOOST_CHECK_EQUAL(arr.GetSize(), newSize);
+					BOOST_CHECK_EQUAL(arr.GetCapacity(), newSize);
+					BOOST_REQUIRE_NE(arr.GetCapacity(), oldCapacity);
+					// check data
+					BOOST_CHECK_EQUAL(arr[oldSize - 1].value, lastValue);
+					BOOST_CHECK_EQUAL(arr[oldSize].value, ArrayItem().value);
+					BOOST_CHECK_EQUAL(arr.GetBack().value, ArrayItem().value);
+				}
+			BOOST_AUTO_TEST_SUITE_END()
+		
 			BOOST_AUTO_TEST_CASE(do_not_corrupt_last_item)
 			{
 				size_t oldSize = arr.GetSize();
+				size_t oldCapacity = arr.GetCapacity();
+				auto lastValue = arr.GetBack().value;
+				auto lastRemainValue = arr[oldSize - 2].value;
 				arr.Resize(oldSize);
 				BOOST_CHECK_EQUAL(arr.GetSize(), oldSize);
-				BOOST_CHECK_EQUAL(arr[oldSize -1].value, arr[oldSize - 1].value);
+				BOOST_CHECK_EQUAL(arr.GetCapacity(), oldCapacity);
+				BOOST_CHECK_EQUAL(arr[oldSize -1].value, lastValue);
 				arr.Resize(oldSize - 1);
 				BOOST_CHECK_EQUAL(arr.GetSize(), oldSize - 1);
-				BOOST_CHECK_EQUAL(arr[oldSize - 2].value, arr[oldSize - 2].value);
+				BOOST_CHECK_EQUAL(arr.GetCapacity(), oldCapacity);
+				BOOST_CHECK_EQUAL(arr[oldSize - 2].value, lastRemainValue);
+			}
+		
+		BOOST_AUTO_TEST_SUITE_END()
+		BOOST_AUTO_TEST_SUITE(Clear_function)
+			BOOST_AUTO_TEST_CASE(delete_all_elements)
+			{
+				size_t oldSize = arr.GetSize();
+				BOOST_REQUIRE_NE(oldSize, 0);
+				arr.Clear();
+				BOOST_CHECK_EQUAL(arr.GetSize(), 0);
+			}
+			BOOST_AUTO_TEST_CASE(do_not_change_capacity)
+			{
+				size_t oldCapacity = arr.GetCapacity();
+				arr.Clear();
+				BOOST_CHECK_EQUAL(arr.GetCapacity(), oldCapacity);
 			}
 		BOOST_AUTO_TEST_SUITE_END()
 	BOOST_AUTO_TEST_SUITE_END()

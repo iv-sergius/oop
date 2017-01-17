@@ -79,7 +79,7 @@ public:
 
 	void Resize(size_t newSize)
 	{
-		if (newSize > GetCapacity())
+		if (newSize > GetCapacity()) // need realloc
 		{
 			auto newBegin = RawAlloc(newSize);
 			T *transitEnd = newBegin;
@@ -90,8 +90,9 @@ public:
 			DeleteItems(m_begin, m_end);
 			m_begin = newBegin;
 			m_end = newEnd;
+			m_endOfCapacity = newEnd;
 		} 
-		else if (newSize >= GetSize())
+		else if (newSize >= GetSize()) // without realloc
 		{
 			T *newEnd = m_begin + newSize;
 			FillDefaultItems(m_end, newEnd); 
@@ -103,6 +104,12 @@ public:
 			DestroyItems(newEnd, m_end);
 			m_end = newEnd;
 		}
+	}
+
+	void Clear()
+	{
+		DestroyItems(m_begin, m_end);
+		m_end = m_begin;
 	}
 
 	~CMyArray()
