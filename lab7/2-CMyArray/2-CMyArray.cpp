@@ -4,8 +4,7 @@
 
 #include "stdafx.h"
 #include <boost/test/output/compiler_log_formatter.hpp>
-
-
+	
 /*
 Данный класс управляет формаитрованием журнала запуска тестов
 Для того, чтобы увидеть результат, приложение должно быть запущено с ключём --log_level=test_suite (см. Post-build event в настройках проекта)

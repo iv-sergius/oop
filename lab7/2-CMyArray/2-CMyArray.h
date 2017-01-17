@@ -87,6 +87,15 @@ public:
 		return m_begin[index];
 	}
 
+	const T& operator[](size_t index) const
+	{
+		if (index >= GetSize())
+		{
+			throw std::out_of_range("Index out of range");
+		}
+		return m_begin[index];
+	}
+
 	CMyArray& operator = (CMyArray && rhs)
 	{
 		if (std::addressof(rhs) != this)
