@@ -20,6 +20,16 @@ public:
 		}
 	}
 
+	CMyArray(CMyArray && arr)
+	{
+		m_begin = arr.m_begin;
+		m_end = arr.m_end;
+		m_endOfCapacity = arr.m_endOfCapacity;
+		arr.m_begin = nullptr;
+		arr.m_end = nullptr;
+		arr.m_endOfCapacity = nullptr;
+	}
+
 	void Append(const T & value)
 	{
 		if (m_end == m_endOfCapacity) // no free space
@@ -75,6 +85,32 @@ public:
 			throw std::out_of_range("Index out of range");
 		}
 		return m_begin[index];
+	}
+
+	CMyArray& operator = (CMyArray && rhs)
+	{
+		if (std::addressof(rhs) != this)
+		{
+			DeleteItems(m_begin, m_end);
+			m_begin = rhs.m_begin;
+			m_end = rhs.m_end;
+			m_endOfCapacity = rhs.m_endOfCapacity;
+			rhs.m_begin = nullptr;
+			rhs.m_end = nullptr;
+			rhs.m_endOfCapacity = nullptr;
+		}
+		return *this;
+	}
+
+	CMyArray& operator = (const CMyArray & rhs)
+	{
+		if (std::addressof(rhs) != this)
+		{
+			CMyArray rhsCopy(rhs);
+			DeleteItems(m_begin, m_end);
+			*this = std::move(rhsCopy);
+			return *this;
+		}
 	}
 
 	void Resize(size_t newSize)
@@ -187,6 +223,9 @@ private:
 	{
 		free(p);
 	}
+
+	//<template T>
+	//class 
 
 private:
 	T *m_begin = nullptr;

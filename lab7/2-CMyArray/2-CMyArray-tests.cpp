@@ -142,7 +142,6 @@ BOOST_FIXTURE_TEST_SUITE(MyArray, EmptyArray)
 				BOOST_CHECK_EQUAL(arr.GetCapacity(), oldCapacity);
 				BOOST_CHECK_EQUAL(arr[oldSize - 2].value, lastRemainValue);
 			}
-		
 		BOOST_AUTO_TEST_SUITE_END()
 		BOOST_AUTO_TEST_SUITE(Clear_function)
 			BOOST_AUTO_TEST_CASE(delete_all_elements)
@@ -157,6 +156,58 @@ BOOST_FIXTURE_TEST_SUITE(MyArray, EmptyArray)
 				size_t oldCapacity = arr.GetCapacity();
 				arr.Clear();
 				BOOST_CHECK_EQUAL(arr.GetCapacity(), oldCapacity);
+			}
+		BOOST_AUTO_TEST_SUITE_END()
+		BOOST_AUTO_TEST_SUITE(Move_construcor)
+			BOOST_AUTO_TEST_CASE(steal_previous_MyArray)
+			{
+				size_t wasSize = arr.GetSize();
+				size_t wasCapacity = arr.GetCapacity();
+				auto wasFirstValue = arr[0].value;
+				auto wasLastValue = arr.GetBack().value;
+				auto movedArr(move(arr));
+				BOOST_CHECK_EQUAL(movedArr.GetSize(), wasSize);
+				BOOST_CHECK_EQUAL(movedArr.GetCapacity(), wasCapacity);
+				BOOST_CHECK_EQUAL(movedArr[0].value, wasFirstValue);
+				BOOST_CHECK_EQUAL(movedArr.GetBack().value, wasLastValue);
+				BOOST_CHECK_EQUAL(arr.GetSize(), 0);
+				BOOST_CHECK_EQUAL(arr.GetCapacity(), 0);
+				//BOOST_REQUIRE_THROW(arr.GetBack(), std::out_of_range);
+			}
+		BOOST_AUTO_TEST_SUITE_END()
+		BOOST_AUTO_TEST_SUITE(Move_Assignment)
+			BOOST_AUTO_TEST_CASE(create_right_copy)
+			{
+				size_t wasSize = arr.GetSize();
+				size_t wasCapacity = arr.GetCapacity();
+				auto wasFirstValue = arr[0].value;
+				auto wasLastValue = arr.GetBack().value;
+				auto movedArr = std::move(arr);
+				BOOST_CHECK_EQUAL(movedArr.GetSize(), wasSize);
+				BOOST_CHECK_EQUAL(movedArr.GetCapacity(), wasCapacity);
+				BOOST_CHECK_EQUAL(movedArr[0].value, wasFirstValue);
+				BOOST_CHECK_EQUAL(movedArr.GetBack().value, wasLastValue);
+				BOOST_CHECK_EQUAL(arr.GetSize(), 0);
+				BOOST_CHECK_EQUAL(arr.GetCapacity(), 0);
+				//BOOST_REQUIRE_THROW(arr.GetBack(), std::out_of_range);
+			}
+		BOOST_AUTO_TEST_SUITE_END()
+		BOOST_AUTO_TEST_SUITE(Copy_Assignment)
+			BOOST_AUTO_TEST_CASE(create_right_copy)
+			{
+				size_t wasSize = arr.GetSize();
+				size_t wasCapacity = arr.GetCapacity();
+				auto wasFirstValue = arr[0].value;
+				auto wasLastValue = arr.GetBack().value;
+				auto movedArr = arr;
+				BOOST_CHECK_EQUAL(movedArr.GetSize(), wasSize);
+				BOOST_CHECK_EQUAL(movedArr.GetCapacity(), wasSize);
+				BOOST_CHECK_EQUAL(movedArr[0].value, wasFirstValue);
+				BOOST_CHECK_EQUAL(movedArr.GetBack().value, wasLastValue);
+				BOOST_CHECK_EQUAL(arr.GetSize(), wasSize);
+				BOOST_CHECK_EQUAL(arr.GetCapacity(), wasCapacity);
+				BOOST_CHECK_EQUAL(arr[0].value, wasFirstValue);
+				BOOST_CHECK_EQUAL(arr.GetBack().value, wasLastValue);
 			}
 		BOOST_AUTO_TEST_SUITE_END()
 	BOOST_AUTO_TEST_SUITE_END()
