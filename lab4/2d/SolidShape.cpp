@@ -24,5 +24,10 @@ std::string CSolidShape::ToString() const
 
 void CSolidShape::AppendProperties(std::ostream & strm) const
 {
+	AppendSolidShapeProperties(strm);
 	strm << "\tfill color = #" << GetFillColor() << std::endl;
+}
+
+void CSolidShape::AppendSolidShapeProperties(std::ostream & strm) const
+{
 }

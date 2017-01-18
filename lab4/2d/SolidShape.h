@@ -21,7 +21,8 @@ public:
 	std::string GetOutlineColor() const override final;
 	std::string ToString() const override;
 protected:
-	void AppendProperties(std::ostream & strm) const override;
+	void AppendProperties(std::ostream & strm) const final;
+	virtual void AppendSolidShapeProperties(std::ostream & strm) const;
 private:
 	std::string m_fillColor;
 };

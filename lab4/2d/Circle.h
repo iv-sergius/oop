@@ -16,7 +16,7 @@ public:
 	CPoint GetCenter() const;
 	double GetRadius() const;
 protected:
-	void AppendProperties(std::ostream & strm) const override;
+	void AppendSolidShapeProperties(std::ostream & strm) const override;
 private:
 	CPoint m_center;
 	double m_radius;

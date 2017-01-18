@@ -15,7 +15,7 @@ public:
 	double GetWidth() const;
 	double GetHeight() const;
 protected:
-	void CRectangle::AppendProperties(std::ostream & strm) const override;
+	void AppendSolidShapeProperties(std::ostream & strm) const override;
 private:
 	CPoint m_leftTop;
 	CPoint m_rightBottom;

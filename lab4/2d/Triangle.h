@@ -14,7 +14,7 @@ public:
 	CPoint GetVertex2() const;
 	CPoint GetVertex3() const;
 protected:
-	void CTriangle::AppendProperties(std::ostream & strm) const override;
+	void AppendSolidShapeProperties(std::ostream & strm) const override;
 private:
 	CPoint m_vertex1;
 	CPoint m_vertex2;

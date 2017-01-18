@@ -71,20 +71,15 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>$(MS_VS_SDK_2015)\boost_1_61_0;$(MS_VS_SDK_2015)\SFML-2.4.0\include;$(IncludePath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(MS_VS_SDK_2015)\boost_1_61_0;$(MS_VS_SDK_2015)\SFML-2.4.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(MS_VS_SDK_2015)\boost_1_61_0;$(MS_VS_SDK_2015)\SFML-2.4.0\include;$(IncludePath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(MS_VS_SDK_2015)\boost_1_61_0;$(MS_VS_SDK_2015)\SFML-2.4.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(MS_VS_SDK_2015)\boost_1_61_0;$(MS_VS_SDK_2015)\SFML-2.4.0\include;$(IncludePath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

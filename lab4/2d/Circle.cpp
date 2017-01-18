@@ -35,9 +35,8 @@ double CCircle::GetRadius() const
 	return m_radius;
 }
 
-void CCircle::AppendProperties(std::ostream & strm) const
+void CCircle::AppendSolidShapeProperties(std::ostream & strm) const
 {
 	strm << "\tcenter point = " << m_center.ToString() << std::endl
 		<< "\tradius = " << m_radius << std::endl;
-	CSolidShape::AppendProperties(strm);
 }

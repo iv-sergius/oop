@@ -45,9 +45,8 @@ double CRectangle::GetHeight() const
 	return m_rightBottom.y - m_leftTop.y;
 }
 
-void CRectangle::AppendProperties(std::ostream & strm) const
+void CRectangle::AppendSolidShapeProperties(std::ostream & strm) const
 {
 	strm << "\tleft top point = " << m_leftTop.ToString() << std::endl
 		<< "\tright bottom point = " << m_rightBottom.ToString() << std::endl;
-	CSolidShape::AppendProperties(strm);
 }

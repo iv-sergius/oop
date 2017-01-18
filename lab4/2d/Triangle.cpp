@@ -34,10 +34,9 @@ CPoint CTriangle::GetVertex3() const
 	return m_vertex3;
 }
 
-void CTriangle::AppendProperties(std::ostream & strm) const
+void CTriangle::AppendSolidShapeProperties(std::ostream & strm) const
 {
 	strm << "\t1st point = " << m_vertex1.ToString() << std::endl
 		<< "\t2nd point = " << m_vertex2.ToString() << std::endl
 		<< "\t3rd point = " << m_vertex3.ToString() << std::endl;
-	CSolidShape::AppendProperties(strm);
 }
