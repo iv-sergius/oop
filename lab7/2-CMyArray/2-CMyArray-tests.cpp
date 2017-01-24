@@ -3,17 +3,132 @@
 
 using namespace std;
 
+static const int THROW_CONSTRUCTOR = -1;
+static const int THROW_COPY_CONSTRUCTOR = -2;
+static const int THROW_MOVE = -3;
+static const size_t LENGTH_DATA = 5;
+static const int THROW_DATA[LENGTH_DATA] = {1, THROW_COPY_CONSTRUCTOR, THROW_MOVE};
+
 struct ArrayItem
 {
-	ArrayItem(int value = 0) : value(value)
-	{}
+	ArrayItem(int val = 0)
+	{
+		value = val;
+		m_isDestuct = false;
+		if (value == THROW_CONSTRUCTOR)
+		{
+			throw std::exception("Constructor exeption only for test");
+		}
+	};
+	ArrayItem(const ArrayItem & rhs)
+	{
+		value = rhs.value;
+		m_isDestuct = rhs.m_isDestuct;
+		if (value == THROW_COPY_CONSTRUCTOR)
+		{
+			throw std::exception("Move exeption only for test");
+		}
+	};
+	ArrayItem& operator = (ArrayItem &&rhs)
+	{
+		value = rhs.value;
+		m_isDestuct = rhs.m_isDestuct;
+		if (value == THROW_MOVE)
+		{
+			throw std::exception("Move exeption only for test");
+		}
+		return *this;
+	}
 	int value;
+	~ArrayItem()
+	{
+		if (m_isDestuct)
+		{
+			assert(!m_isDestuct);
+		}
+		m_isDestuct = true;
+	}
+private:
+	bool m_isDestuct = false;
 };
 
 struct EmptyArray
 {
 	CMyArray<ArrayItem> arr;
 };
+
+struct with_some_elements_ : EmptyArray
+{
+	CMyArray<ArrayItem> arrWithThrowsOnMove;
+	CMyArray<ArrayItem> arrWithThrowsOnCopy;
+	with_some_elements_()
+	{
+		for (auto i = 0; i < LENGTH_DATA; ++i)
+		{
+			arr.Append(i);
+		}
+		for (auto i = 0; i <= LENGTH_DATA; ++i)
+		{
+			arrWithThrowsOnCopy.Append(THROW_COPY_CONSTRUCTOR);
+		}
+		for (auto i = 0; i <= LENGTH_DATA; ++i)
+		{
+			arrWithThrowsOnMove.Append(THROW_MOVE);
+		}
+	}
+};
+
+void VerifyItem(const ArrayItem & item, const ArrayItem & expectedItem)
+{
+	BOOST_CHECK_EQUAL(item.value, expectedItem.value);
+}
+
+void VerifyMyArrayEquality(const CMyArray<ArrayItem> & arr)
+{
+	for (size_t i = 0; i < LENGTH_DATA; ++i)
+	{
+		BOOST_CHECK_EQUAL(arr[i].value, i);
+	}
+}
+
+void VerifyMyArrayEquality(const CMyArray<ArrayItem> & arr, const CMyArray<ArrayItem> & expectedArr)
+{
+	BOOST_CHECK_EQUAL(arr.GetSize(), expectedArr.GetSize());
+	for (size_t i = 0; i < arr.GetSize(); ++i)
+	{
+		BOOST_CHECK_EQUAL(arr[i].value, expectedArr[i].value);
+	}
+}
+
+
+BOOST_AUTO_TEST_SUITE(Array_Item)
+	BOOST_AUTO_TEST_CASE(have_defaut_constructor)
+	{
+		ArrayItem item(0);
+		VerifyItem(item, ArrayItem());
+	}
+	BOOST_AUTO_TEST_CASE(can_throw_exeption_in_constructor)
+	{
+		BOOST_REQUIRE_THROW(ArrayItem item(THROW_CONSTRUCTOR), std::exception);
+	}
+	BOOST_AUTO_TEST_CASE(can_throw_exeption_in_copy_constructor)
+	{
+		ArrayItem item(THROW_COPY_CONSTRUCTOR);
+		BOOST_REQUIRE_THROW(ArrayItem copy(item), std::exception);
+	}
+	BOOST_AUTO_TEST_CASE(can_throw_exeption_on_move)
+	{
+		ArrayItem item(THROW_MOVE), move;
+		BOOST_REQUIRE_THROW(move = std::move(item), std::exception);
+	}
+	/*BOOST_AUTO_TEST_CASE(can_throw_exeption_in_second_destructor)
+	{
+		ArrayItem item(0);
+		item.~ArrayItem();
+		BOOST_REQUIRE_THROW(item.~ArrayItem(), std::exception);
+	}*/
+BOOST_AUTO_TEST_SUITE_END()
+
 
 static const std::string DEFAULT_DATA;
 static const std::vector < std::string> STR_DATA = {
@@ -76,19 +191,32 @@ BOOST_FIXTURE_TEST_SUITE(MyArray, EmptyArray)
 			arr.Append(4);
 			BOOST_CHECK_EQUAL(arr.GetBack().value, 4);
 		}
+		BOOST_AUTO_TEST_SUITE(array_do_not_change_if_rise_exception)
+			BOOST_AUTO_TEST_CASE(in_constructor)
+			{
+				arr.Append(1);
+				BOOST_CHECK_EQUAL(arr.GetSize(), 1);
+				BOOST_CHECK_EQUAL(arr.GetCapacity(), 1);
+				BOOST_REQUIRE_THROW(arr.Append(THROW_CONSTRUCTOR), std::exception);
+				VerifyItem(arr.GetBack(), ArrayItem(1));
+				BOOST_CHECK_EQUAL(arr.GetSize(), 1);
+				BOOST_CHECK_EQUAL(arr.GetCapacity(), 1);
+			}
+			BOOST_AUTO_TEST_CASE(while_copy)
+			{
+				arr.Append(1);
+				BOOST_CHECK_EQUAL(arr.GetSize(), 1u);
+				BOOST_CHECK_EQUAL(arr.GetCapacity(), 1u);
+				ArrayItem nonMoveItem(THROW_COPY_CONSTRUCTOR);
+				BOOST_REQUIRE_THROW(arr.Append(nonMoveItem), std::exception);
+				VerifyItem(arr.GetBack(), ArrayItem(1));
+				BOOST_CHECK_EQUAL(arr.GetSize(), 1u);
+				BOOST_CHECK_EQUAL(arr.GetCapacity(), 1u); 
+			}
+		BOOST_AUTO_TEST_SUITE_END()
 	BOOST_AUTO_TEST_SUITE_END()
 
-	struct with_some_elements_ : EmptyArray
-	{
-		with_some_elements_()
-		{
-			for (auto i = 0; i < 5; ++i)
-			{
-				arr.Append(i * i);
-			}
-		}
-	};
-	BOOST_FIXTURE_TEST_SUITE(When_array_non_empty, with_some_strings_)
+	BOOST_FIXTURE_TEST_SUITE(When_array_non_empty, with_some_elements_)
 		BOOST_AUTO_TEST_SUITE(after_copy_construction)
 			BOOST_AUTO_TEST_CASE(has_size_capacity_equal_to_size_of_original_array)
 			{
@@ -96,21 +224,22 @@ BOOST_FIXTURE_TEST_SUITE(MyArray, EmptyArray)
 				auto copy(arr);
 				BOOST_CHECK_EQUAL(copy.GetSize(), arr.GetSize());
 				BOOST_CHECK_EQUAL(copy.GetCapacity(), arr.GetSize());
+				VerifyMyArrayEquality(copy, arr);
 			}
 		BOOST_AUTO_TEST_SUITE_END()
 		BOOST_AUTO_TEST_SUITE(index_operator)
 			BOOST_AUTO_TEST_CASE(get_access_to_element)
 			{
-				BOOST_CHECK_EQUAL(arr[0], STR_DATA[0]);
-				BOOST_CHECK_EQUAL(arr[2], STR_DATA[2]);
-				BOOST_CHECK_EQUAL(arr[4], STR_DATA[4]);
+				VerifyItem(arr[0], ArrayItem(0));
+				VerifyItem(arr[2], ArrayItem(2));
+				VerifyItem(arr[4], ArrayItem(4));
 			}
 			BOOST_AUTO_TEST_CASE(even_of_const_CMyArray)
 			{
 				const auto constArr(arr);
-				BOOST_CHECK_EQUAL(constArr[0], STR_DATA[0]);
-				BOOST_CHECK_EQUAL(constArr[2], STR_DATA[2]);
-				BOOST_CHECK_EQUAL(constArr[4], STR_DATA[4]);
+				VerifyItem(constArr[0], ArrayItem(0));
+				VerifyItem(constArr[2], ArrayItem(2));
+				VerifyItem(constArr[4], ArrayItem(4));
 			}
 			BOOST_AUTO_TEST_CASE(throw_on_invalid_index)
 			{
@@ -130,38 +259,36 @@ BOOST_FIXTURE_TEST_SUITE(MyArray, EmptyArray)
 					BOOST_CHECK_EQUAL(arr.GetSize(), newSize);
 					BOOST_CHECK_EQUAL(arr.GetCapacity(), oldCapacity);
 					// check data
-					BOOST_CHECK_EQUAL(arr[oldSize - 1], STR_DATA[oldSize - 1]);
-					BOOST_CHECK_EQUAL(arr[oldSize], DEFAULT_DATA);
-					BOOST_CHECK_EQUAL(arr.GetBack(), DEFAULT_DATA);
+					VerifyItem(arr[oldSize - 1], ArrayItem(oldSize - 1));
+					VerifyItem(arr[oldSize], ArrayItem());
+					VerifyItem(arr.GetBack(), ArrayItem());
 				}
 				BOOST_AUTO_TEST_CASE(and_can_increase_capacity)
 				{
 					size_t oldSize = arr.GetSize();
 					size_t oldCapacity = arr.GetCapacity();
-					size_t newSize = 2 * oldSize + 1; // oldSize < newSize < oldCapacity
+					size_t newSize = 2 * oldSize + 1; // must be reallocate
 					arr.Resize(newSize);
 					BOOST_CHECK_EQUAL(arr.GetSize(), newSize);
 					BOOST_CHECK_EQUAL(arr.GetCapacity(), newSize);
 					BOOST_REQUIRE_NE(arr.GetCapacity(), oldCapacity);
 					// check data
-					BOOST_CHECK_EQUAL(arr[oldSize - 1], STR_DATA[oldSize - 1]);
-					BOOST_CHECK_EQUAL(arr[oldSize], DEFAULT_DATA);
-					BOOST_CHECK_EQUAL(arr.GetBack(), DEFAULT_DATA);
+					VerifyItem(arr[oldSize - 1], ArrayItem(oldSize - 1));
+					VerifyItem(arr[oldSize], ArrayItem());
+					VerifyItem(arr.GetBack(), ArrayItem());
 				}
 			BOOST_AUTO_TEST_SUITE_END()
 		
-			BOOST_AUTO_TEST_CASE(do_not_corrupt_last_item)
+			BOOST_AUTO_TEST_CASE(do_not_corrupt_data_if_throw_in_reallocation)
 			{
-				size_t oldSize = arr.GetSize();
-				size_t oldCapacity = arr.GetCapacity();
-				arr.Resize(oldSize);
-				BOOST_CHECK_EQUAL(arr.GetSize(), oldSize);
-				BOOST_CHECK_EQUAL(arr.GetCapacity(), oldCapacity);
-				BOOST_CHECK_EQUAL(arr[oldSize - 1], STR_DATA[oldSize - 1]);
-				arr.Resize(oldSize - 1);
-				BOOST_CHECK_EQUAL(arr.GetSize(), oldSize - 1);
-				BOOST_CHECK_EQUAL(arr.GetCapacity(), oldCapacity);
-				BOOST_CHECK_EQUAL(arr[oldSize - 2], STR_DATA[oldSize - 2]);
+				size_t oldSize = arrWithThrowsOnCopy.GetSize();
+				size_t oldCapacity = arrWithThrowsOnCopy.GetCapacity();
+				size_t newSize = 2 * oldSize + 1; // must be reallocate
+				BOOST_REQUIRE_THROW(arrWithThrowsOnCopy.Resize(newSize), std::exception);
+				BOOST_CHECK_EQUAL(arrWithThrowsOnCopy.GetSize(), oldSize);
+				BOOST_CHECK_EQUAL(arrWithThrowsOnCopy.GetCapacity(), oldSize);
+				// check data
+				VerifyItem(arr.GetBack(), ArrayItem(4));
 			}
 		BOOST_AUTO_TEST_SUITE_END()
 		BOOST_AUTO_TEST_SUITE(Clear_function)
@@ -187,12 +314,20 @@ BOOST_FIXTURE_TEST_SUITE(MyArray, EmptyArray)
 				auto movedArr(move(arr));
 				BOOST_CHECK_EQUAL(movedArr.GetSize(), wasSize);
 				BOOST_CHECK_EQUAL(movedArr.GetCapacity(), wasCapacity);
-				BOOST_CHECK_EQUAL(movedArr[0], STR_DATA[0]);
-				BOOST_CHECK_EQUAL(movedArr.GetBack(), STR_DATA.back());
+				VerifyItem(movedArr[0], ArrayItem());
+				VerifyItem(movedArr.GetBack(), ArrayItem(4));
 				BOOST_CHECK_EQUAL(arr.GetSize(), 0);
 				BOOST_CHECK_EQUAL(arr.GetCapacity(), 0);
-				//BOOST_REQUIRE_THROW(arr.GetBack(), std::out_of_range);
 			}
+/*
+			BOOST_AUTO_TEST_CASE(do_not_change_anything_on_throw)
+			{
+				size_t wasSize = arrWithThrowsOnMove.GetSize();
+				size_t wasCapacity = arrWithThrowsOnMove.GetCapacity();
+				CMyArray<ArrayItem> movedArr;
+				BOOST_REQUIRE_THROW(movedArr = std::move(arrWithThrowsOnMove), std::exception);
+			}
+*/
 		BOOST_AUTO_TEST_SUITE_END()
 		BOOST_AUTO_TEST_SUITE(Move_Assignment)
 			BOOST_AUTO_TEST_CASE(create_right_copy)
@@ -202,8 +337,8 @@ BOOST_FIXTURE_TEST_SUITE(MyArray, EmptyArray)
 				auto movedArr = std::move(arr);
 				BOOST_CHECK_EQUAL(movedArr.GetSize(), wasSize);
 				BOOST_CHECK_EQUAL(movedArr.GetCapacity(), wasCapacity);
-				BOOST_CHECK_EQUAL(movedArr[0], STR_DATA[0]);
-				BOOST_CHECK_EQUAL(movedArr.GetBack(), STR_DATA.back());
+				VerifyItem(movedArr[0], ArrayItem(0));
+				VerifyItem(movedArr.GetBack(), ArrayItem(4));
 				BOOST_CHECK_EQUAL(arr.GetSize(), 0);
 				BOOST_CHECK_EQUAL(arr.GetCapacity(), 0);
 				//BOOST_REQUIRE_THROW(arr.GetBack(), std::out_of_range);
@@ -217,13 +352,31 @@ BOOST_FIXTURE_TEST_SUITE(MyArray, EmptyArray)
 				auto movedArr = arr;
 				BOOST_CHECK_EQUAL(movedArr.GetSize(), wasSize);
 				BOOST_CHECK_EQUAL(movedArr.GetCapacity(), wasSize);
-				BOOST_CHECK_EQUAL(movedArr[0], STR_DATA[0]);
-				BOOST_CHECK_EQUAL(movedArr.GetBack(), STR_DATA.back());
+				VerifyItem(movedArr[0], ArrayItem(0));
+				VerifyItem(movedArr.GetBack(), ArrayItem(4));
 				BOOST_CHECK_EQUAL(arr.GetSize(), wasSize);
 				BOOST_CHECK_EQUAL(arr.GetCapacity(), wasCapacity);
-				BOOST_CHECK_EQUAL(arr[0], STR_DATA[0]);
-				BOOST_CHECK_EQUAL(arr.GetBack(), STR_DATA.back());
-		}
+				VerifyMyArrayEquality(movedArr, arr);
+			}
+			BOOST_AUTO_TEST_CASE(do_not_change_anything_on_throw)
+			{
+				size_t wasSize = arr.GetSize();
+				size_t wasCapacity = arr.GetCapacity();
+				size_t wasArrWithThrowSize = arrWithThrowsOnCopy.GetSize();
+				size_t wasArrWithThrowCapacity = arrWithThrowsOnCopy.GetCapacity();
+				BOOST_REQUIRE_NE(wasSize, wasArrWithThrowSize);
+				BOOST_REQUIRE_THROW(arr = arrWithThrowsOnCopy, std::exception);
+				
+				BOOST_CHECK_EQUAL(arrWithThrowsOnCopy.GetSize(), wasSize);
+				BOOST_CHECK_EQUAL(arrWithThrowsOnCopy.GetCapacity(), wasSize);
+				VerifyItem(arrWithThrowsOnCopy[0], ArrayItem(THROW_COPY_CONSTRUCTOR));
+				VerifyItem(arrWithThrowsOnCopy.GetBack(), ArrayItem(THROW_COPY_CONSTRUCTOR));
+				
+				BOOST_CHECK_EQUAL(arr.GetSize(), wasSize);
+				BOOST_CHECK_EQUAL(arr.GetCapacity(), wasCapacity);
+				VerifyItem(arr[0], ArrayItem(0));
+				VerifyItem(arr.GetBack(), ArrayItem(4));
+			}
 		BOOST_AUTO_TEST_SUITE_END()
 	BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE_END()

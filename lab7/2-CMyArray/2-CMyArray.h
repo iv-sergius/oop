@@ -40,7 +40,7 @@ public:
 			T *newEnd = newBegin;
 			CopyItems(m_begin, m_end, newBegin, newEnd);
 			// Конструируем копию value по адресу newItemLocation
-			new (newEnd)T(value);
+			new (newEnd)T(value);	
 			++newEnd;
 			DeleteItems(m_begin, m_end);
 
@@ -117,7 +117,11 @@ public:
 		{
 			CMyArray rhsCopy(rhs);
 			DeleteItems(m_begin, m_end);
-			*this = std::move(rhsCopy);
+
+			std::swap(rhsCopy.m_begin, this->m_begin);
+			std::swap(rhsCopy.m_end, this->m_end);
+			std::swap(rhsCopy.m_endOfCapacity, this->m_endOfCapacity);
+
 			return *this;
 		}
 	}
@@ -171,7 +175,7 @@ private:
 	}
 
 	// Копирует элементы из текущего вектора в to, возвращает newEnd
-	static void CopyItems(const T *srcBegin, T *srcEnd, T * const dstBegin, T * & dstEnd)
+	static void CopyItems(const T *srcBegin, const T *srcEnd, T * dstBegin, T * & dstEnd)
 	{
 		try
 		{
