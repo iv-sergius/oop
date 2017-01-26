@@ -15,8 +15,16 @@ public:
 		if (size != 0)
 		{
 			m_begin = RawAlloc(size);
-			CopyItems(arr.m_begin, arr.m_end, m_begin, m_end);
-			m_endOfCapacity = m_end;
+			try
+			{
+				CopyItems(arr.m_begin, arr.m_end, m_begin, m_end);
+				m_endOfCapacity = m_end;
+			}
+			catch (...)
+			{
+				DeleteItems(m_begin, m_end);
+				throw;
+			}
 		}
 	}
 
@@ -38,10 +46,18 @@ public:
 
 			auto newBegin = RawAlloc(newCapacity);
 			T *newEnd = newBegin;
-			CopyItems(m_begin, m_end, newBegin, newEnd);
-			// Конструируем копию value по адресу newItemLocation
-			new (newEnd)T(value);	
-			++newEnd;
+			try
+			{
+				CopyItems(m_begin, m_end, newBegin, newEnd);
+				// Конструируем копию value по адресу newItemLocation
+				new (newEnd)T(value);
+				++newEnd;
+			}
+			catch (...)
+			{
+				DeleteItems(newBegin, newEnd);
+				throw;
+			}
 			DeleteItems(m_begin, m_end);
 
 			// Переключаемся на использование нового хранилища элементов
@@ -51,7 +67,7 @@ public:
 		}
 		else // has free space
 		{
-			new (m_end) T (value);
+			new (m_end) T(value);
 			++m_end;
 		}
 	}
@@ -116,14 +132,12 @@ public:
 		if (std::addressof(rhs) != this)
 		{
 			CMyArray rhsCopy(rhs);
-			DeleteItems(m_begin, m_end);
 
 			std::swap(rhsCopy.m_begin, this->m_begin);
 			std::swap(rhsCopy.m_end, this->m_end);
 			std::swap(rhsCopy.m_endOfCapacity, this->m_endOfCapacity);
-
-			return *this;
 		}
+		return *this;
 	}
 
 	void Resize(size_t newSize)
@@ -132,20 +146,37 @@ public:
 		{
 			auto newBegin = RawAlloc(newSize);
 			T *transitEnd = newBegin;
-			CopyItems(m_begin, m_end, newBegin, transitEnd);
-			T *newEnd = newBegin + newSize;
-			FillDefaultItems(transitEnd, newEnd);
-			// switch to new place
-			DeleteItems(m_begin, m_end);
-			m_begin = newBegin;
-			m_end = newEnd;
-			m_endOfCapacity = newEnd;
-		} 
-		else if (newSize >= GetSize()) // without realloc
+			try
+			{
+				CopyItems(m_begin, m_end, newBegin, transitEnd);
+				T *newEnd = newBegin + newSize;
+				FillDefaultItems(transitEnd, newEnd);
+				// switch to new place
+				DeleteItems(m_begin, m_end);
+				m_begin = newBegin;
+				m_end = newEnd;
+				m_endOfCapacity = newEnd;
+			}
+			catch (...)
+			{
+				DeleteItems(newBegin, transitEnd);
+				throw;
+			}
+		}
+		else if (newSize > GetSize()) // without realloc
 		{
 			T *newEnd = m_begin + newSize;
-			FillDefaultItems(m_end, newEnd); 
-			m_end = newEnd;
+			T *transitEnd = m_end;
+			try
+			{
+				FillDefaultItems(transitEnd, newEnd);
+				m_end = newEnd;
+			}
+			catch (...)
+			{
+				DestroyItems(m_end, transitEnd);
+				throw;
+			}
 		}
 		else if (newSize < GetSize()) // destroy excess elements
 		{
@@ -165,6 +196,10 @@ public:
 	{
 		DeleteItems(m_begin, m_end);
 	}
+
+	//template<typename T>
+	//class CMyArrayIterator : public std::iterator<std::bidirectional_iterator_tag, T>
+
 private:
 	static void DeleteItems(T *begin, T *end)
 	{
@@ -175,37 +210,20 @@ private:
 	}
 
 	// Копирует элементы из текущего вектора в to, возвращает newEnd
-	static void CopyItems(const T *srcBegin, const T *srcEnd, T * dstBegin, T * & dstEnd)
+	static void CopyItems(const T *srcBegin, T *srcEnd, T * const dstBegin, T * & dstEnd)
 	{
-		try
+		for (dstEnd = dstBegin; srcBegin != srcEnd; ++srcBegin, ++dstEnd)
 		{
-			for (dstEnd = dstBegin; srcBegin != srcEnd; ++srcBegin, ++dstEnd)
-			{
-				// Construct "T" at "dstEnd" as a copy of "*begin"
-				new (dstEnd)T(*srcBegin);
-			}
-		}
-		catch (...)
-		{
-			DeleteItems(dstBegin, dstEnd);
-			throw;
+			// Construct "T" at "dstEnd" as a copy of "*begin"
+			new (dstEnd)T(*srcBegin);
 		}
 	}
 
-	static void FillDefaultItems(T *from, T *to)
+	static void FillDefaultItems(T * & dstBegin, T * const dstEnd)
 	{
-		T *copyItemPtr;
-		try 
+		for (; dstBegin < dstEnd; ++dstBegin) //or   from != to 
 		{
-			for (copyItemPtr = from; copyItemPtr < to; ++copyItemPtr) //or   from != to 
-			{
-				new (copyItemPtr)T(); // безопасен ли констуктор по умолчанию к исключениям??
-			}
-		}
-		catch (...)
-		{
-			DeleteItems(from, copyItemPtr);
-			throw;
+			new (dstBegin)T();
 		}
 	}
 
@@ -236,9 +254,6 @@ private:
 	{
 		free(p);
 	}
-
-	//<template T>
-	//class 
 
 private:
 	T *m_begin = nullptr;

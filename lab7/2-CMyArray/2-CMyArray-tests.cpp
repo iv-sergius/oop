@@ -7,7 +7,6 @@ static const int THROW_CONSTRUCTOR = -1;
 static const int THROW_COPY_CONSTRUCTOR = -2;
 static const int THROW_MOVE = -3;
 static const size_t LENGTH_DATA = 5;
-static const int THROW_DATA[LENGTH_DATA] = {1, THROW_COPY_CONSTRUCTOR, THROW_MOVE};
 
 struct ArrayItem
 {
@@ -26,7 +25,7 @@ struct ArrayItem
 		m_isDestuct = rhs.m_isDestuct;
 		if (value == THROW_COPY_CONSTRUCTOR)
 		{
-			throw std::exception("Move exeption only for test");
+			throw std::exception("Copy exeption only for test");
 		}
 	};
 	ArrayItem& operator = (ArrayItem &&rhs)
@@ -59,22 +58,22 @@ struct EmptyArray
 
 struct with_some_elements_ : EmptyArray
 {
-	CMyArray<ArrayItem> arrWithThrowsOnMove;
-	CMyArray<ArrayItem> arrWithThrowsOnCopy;
 	with_some_elements_()
 	{
 		for (auto i = 0; i < LENGTH_DATA; ++i)
 		{
 			arr.Append(i);
 		}
+/*
 		for (auto i = 0; i <= LENGTH_DATA; ++i)
 		{
 			arrWithThrowsOnCopy.Append(THROW_COPY_CONSTRUCTOR);
 		}
 		for (auto i = 0; i <= LENGTH_DATA; ++i)
 		{
-			arrWithThrowsOnMove.Append(THROW_MOVE);
+			//arrWithThrowsOnMove.Append(THROW_MOVE);
 		}
+*/
 	}
 };
 
@@ -281,6 +280,8 @@ BOOST_FIXTURE_TEST_SUITE(MyArray, EmptyArray)
 		
 			BOOST_AUTO_TEST_CASE(do_not_corrupt_data_if_throw_in_reallocation)
 			{
+				auto arrWithThrowsOnCopy(arr);
+				arrWithThrowsOnCopy[2].value = THROW_COPY_CONSTRUCTOR; // inject noncopy array item
 				size_t oldSize = arrWithThrowsOnCopy.GetSize();
 				size_t oldCapacity = arrWithThrowsOnCopy.GetCapacity();
 				size_t newSize = 2 * oldSize + 1; // must be reallocate
@@ -344,6 +345,7 @@ BOOST_FIXTURE_TEST_SUITE(MyArray, EmptyArray)
 				//BOOST_REQUIRE_THROW(arr.GetBack(), std::out_of_range);
 			}
 		BOOST_AUTO_TEST_SUITE_END()
+
 		BOOST_AUTO_TEST_SUITE(Copy_Assignment)
 			BOOST_AUTO_TEST_CASE(create_right_copy)
 			{
@@ -360,6 +362,10 @@ BOOST_FIXTURE_TEST_SUITE(MyArray, EmptyArray)
 			}
 			BOOST_AUTO_TEST_CASE(do_not_change_anything_on_throw)
 			{
+				auto arrWithThrowsOnCopy(arr);
+				arrWithThrowsOnCopy[0].value = THROW_COPY_CONSTRUCTOR; // inject noncopy array item
+				arrWithThrowsOnCopy[3].value = THROW_COPY_CONSTRUCTOR; // inject noncopy array item
+				arrWithThrowsOnCopy.Resize(4);
 				size_t wasSize = arr.GetSize();
 				size_t wasCapacity = arr.GetCapacity();
 				size_t wasArrWithThrowSize = arrWithThrowsOnCopy.GetSize();
@@ -367,8 +373,8 @@ BOOST_FIXTURE_TEST_SUITE(MyArray, EmptyArray)
 				BOOST_REQUIRE_NE(wasSize, wasArrWithThrowSize);
 				BOOST_REQUIRE_THROW(arr = arrWithThrowsOnCopy, std::exception);
 				
-				BOOST_CHECK_EQUAL(arrWithThrowsOnCopy.GetSize(), wasSize);
-				BOOST_CHECK_EQUAL(arrWithThrowsOnCopy.GetCapacity(), wasSize);
+				BOOST_CHECK_EQUAL(arrWithThrowsOnCopy.GetSize(), wasArrWithThrowSize);
+				BOOST_CHECK_EQUAL(arrWithThrowsOnCopy.GetCapacity(), wasArrWithThrowCapacity);
 				VerifyItem(arrWithThrowsOnCopy[0], ArrayItem(THROW_COPY_CONSTRUCTOR));
 				VerifyItem(arrWithThrowsOnCopy.GetBack(), ArrayItem(THROW_COPY_CONSTRUCTOR));
 				
@@ -378,5 +384,6 @@ BOOST_FIXTURE_TEST_SUITE(MyArray, EmptyArray)
 				VerifyItem(arr.GetBack(), ArrayItem(4));
 			}
 		BOOST_AUTO_TEST_SUITE_END()
+
 	BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE_END()
