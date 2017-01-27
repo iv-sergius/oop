@@ -27,6 +27,9 @@
     <ClInclude Include="2-CMyArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="2-CMyArrayIterator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -36,6 +39,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="2-CMyArray-tests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="2-CMyArrayIterator-test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

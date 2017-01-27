@@ -2,6 +2,7 @@
 
 #include <new>
 #include <algorithm>
+#include "2-CMyArrayIterator.h"
 
 template <typename T>
 class CMyArray
@@ -197,8 +198,22 @@ public:
 		DeleteItems(m_begin, m_end);
 	}
 
-	//template<typename T>
-	//class CMyArrayIterator : public std::iterator<std::bidirectional_iterator_tag, T>
+	CMyArrayIterator<T> begin()
+	{
+		return CMyArrayIterator<T>(m_begin, m_begin, m_end);
+	}
+	CMyArrayIterator<T> end()
+	{
+		return CMyArrayIterator<T>(m_end, m_begin, m_end);
+	}
+	CMyArrayIterator<T> rbegin()
+	{
+		return CMyArrayIterator<T>(m_end - 1, m_end - 1, m_begin - 1);
+	}
+	CMyArrayIterator<T> rend()
+	{
+		return CMyArrayIterator<T>(m_begin - 1, m_end - 1, m_begin - 1);
+	}
 
 private:
 	static void DeleteItems(T *begin, T *end)

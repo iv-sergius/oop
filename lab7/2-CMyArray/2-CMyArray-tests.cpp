@@ -128,30 +128,6 @@ BOOST_AUTO_TEST_SUITE(Array_Item)
 	}*/
 BOOST_AUTO_TEST_SUITE_END()
 
-
-static const std::string DEFAULT_DATA;
-static const std::vector < std::string> STR_DATA = {
-	"\"If\" Rudyard Kipling",
-	"If you can keep your head when all about you",
-	"Are losing theirs and blaming it on you,",
-	"If you can trust yourself when all men doubt you,",
-	"But make allowance for their doubting too;"
-};
-
-struct EmptyStringArray
-{
-	CMyArray <std::string> arr;
-};
-struct with_some_strings_ : EmptyStringArray
-{
-	with_some_strings_(){
-		for (auto item : STR_DATA)
-		{
-			arr.Append(item);
-		}
-	}
-};
-
 BOOST_FIXTURE_TEST_SUITE(MyArray, EmptyArray)
 	BOOST_AUTO_TEST_SUITE(by_default)
 		BOOST_AUTO_TEST_CASE(is_empty)
@@ -342,7 +318,6 @@ BOOST_FIXTURE_TEST_SUITE(MyArray, EmptyArray)
 				VerifyItem(movedArr.GetBack(), ArrayItem(4));
 				BOOST_CHECK_EQUAL(arr.GetSize(), 0);
 				BOOST_CHECK_EQUAL(arr.GetCapacity(), 0);
-				//BOOST_REQUIRE_THROW(arr.GetBack(), std::out_of_range);
 			}
 		BOOST_AUTO_TEST_SUITE_END()
 
